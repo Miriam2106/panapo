@@ -31,16 +31,16 @@ export const DirectionList = () => {
     const [isOpenDetails, setIsOpenDetails] = useState(false);
 
     const filteredItems = directives.filter(
-        (item) => item.person.name && item.person.name.toLowerCase().includes(filterText.toLowerCase()),
+        (item) => item.person.name && item.person.name.toLowerCase().includes(filterText.toLowerCase()) ||
+            item.person.surname && item.person.surname.toLowerCase().includes(filterText.toLowerCase()) ||
+            item.person.secondSurname && item.person.secondSurname.toLowerCase().includes(filterText.toLowerCase())
     );
 
     const getDirectives = () => {
         axios({ url: "/user/", method: "GET" })
             .then((response) => {
                 let data = response.data;
-                console.log(data)
                 let directivesTemp = data.filter(item => item.person.profession.description === "Directivo")
-                console.log(directivesTemp)
                 setDirectives(directivesTemp);
                 setIsLoading(false);
             })
@@ -54,14 +54,12 @@ export const DirectionList = () => {
             name: "",
             surname: "",
             secondSurname: "",
-            email: "",
-            profession: 1
+            email: ""
         },
         validationSchema: yup.object().shape({
             name: yup.string().required("Campo obligatorio"),
             surname: yup.string().required("Campo obligatorio"),
             secondSurname: yup.string().required("Campo obligatorio"),
-            profession: yup.number().required("Campo obligatorio"),
         }),
         onSubmit: (values) => {
             const person = {
@@ -91,7 +89,6 @@ export const DirectionList = () => {
                     description: "Activo"
                 }
             };
-            console.log(person)
             Alert.fire({
                 title: titleConfirmacion,
                 text: msjConfirmacion,
@@ -104,12 +101,10 @@ export const DirectionList = () => {
                 showLoaderOnConfirm: true,
                 icon: "warning",
                 preConfirm: () => {
-                    return axios({ url: "/person/", method: "POST", data: JSON.stringify(person) })
+                    return axios({ url: "/user/", method: "POST", data: JSON.stringify(person) })
                         .then((response) => {
                             console.log(response)
                             if (!response.error) {
-                                // ... significa agregar un objeto a una lista
-                                //setPersonal(personal => [...personal, response.data])
                                 getDirectives();
                                 Alert.fire({
                                     title: titleExito,
@@ -175,6 +170,7 @@ export const DirectionList = () => {
                                 "secondSurname": row.person.secondSurname,
                                 "username": row.username,
                             });
+                            console.log(values)
                             setIsOpenDetails(true);
                         }}
                     >
@@ -193,7 +189,6 @@ export const DirectionList = () => {
                         onClick={() => {
                             setValues(row)
                             setIsOpenUpdate(true)
-                            console.log(row)
                         }}
                     >
                         <FeatherIcon icon="edit" />
@@ -242,11 +237,11 @@ export const DirectionList = () => {
     return (
         <div className="content-wrapper screenHeight">
             <Container fluid>
-                <section class="content-header">
-                    <div class="container-fluid">
-                        <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <h1 class="font-weight-bold">Gestión de usuarios de alta dirección</h1>
+                <section className="content-header">
+                    <div className="container-fluid">
+                        <div className="row mb-2">
+                            <div className="col-sm-6">
+                                <h1 className="font-weight-bold">Gestión de usuarios de alta dirección</h1>
                             </div>
                         </div>
                     </div>
@@ -276,64 +271,54 @@ export const DirectionList = () => {
                             </Card.Header>
                             <Collapse in={isOpen}>
                                 <div id="example-collapse-text">
-                                    <Container fluid>
-                                        <Card.Body>
-                                            <Row>
-                                                <Col as="h6" className="text-bold">
-                                                    Datos del directivo
-                                                </Col>
-                                            </Row>
-                                            <div id="example-collapse-text">
-                                                <Form className="row">
-                                                    <Form.Group className="col-md-4 ">
-                                                        <Form.Label>Nombre(s)</Form.Label>
-                                                        <Form.Control type="text" placeholder="Emmanuel" name="name" value={formik.values.name}
-                                                            onChange={formik.handleChange} />
-                                                        {formik.errors.name ? (
-                                                            <span className='error-text'>{formik.errors.name}</span>
-                                                        ) : null}
-                                                    </Form.Group>
-                                                    <Form.Group className="col-md-4 ">
-                                                        <Form.Label>Primer Apellido</Form.Label>
-                                                        <Form.Control type="text" placeholder="Herrera" name="surname" value={formik.values.name}
-                                                            onChange={formik.handleChange} />
-                                                        {formik.errors.surname ? (
-                                                            <span className='error-text'>{formik.errors.surname}</span>
-                                                        ) : null}
-                                                    </Form.Group>
-                                                    <Form.Group className="col-md-4 ">
-                                                        <Form.Label>Segundo Apellido</Form.Label>
-                                                        <Form.Control type="text" placeholder="Ibarra" name="secondSurname" value={formik.values.secondSurname}
-                                                            onChange={formik.handleChange} />
-                                                        {formik.errors.secondSurname ? (
-                                                            <span className='error-text'>{formik.errors.secondSurname}</span>
-                                                        ) : null}
-                                                    </Form.Group>
-                                                    <Form.Group className="col-md-4 ">
-                                                        <Form.Label>Correo Electrónico</Form.Label>
-                                                        <Form.Control
-                                                            type="email"
-                                                            placeholder="utez@utez.edu.mx" name="email" value={formik.values.email}
-                                                            onChange={formik.handleChange} />
-                                                        {formik.errors.email ? (
-                                                            <span className='error-text'>{formik.errors.email}</span>
-                                                        ) : null}
-                                                    </Form.Group>
-                                                    <div className="d-grid gap-2">
-                                                        <Button
-                                                            type="submit"
-                                                            style={{
-                                                                background: "#042B61",
-                                                                borderColor: "#042B61",
-                                                            }}
-                                                        >
-                                                            Registrar
-                                                        </Button>
-                                                    </div>
-                                                </Form>
+                                    <Card.Body>
+                                        <Form className="row" onSubmit={formik.handleSubmit}>
+                                            <Form.Group className="col-md-4 mt-3">
+                                                <Form.Label>Nombre(s)</Form.Label>
+                                                <Form.Control type="text" placeholder="Emmanuel" name="name" value={formik.values.name}
+                                                    onChange={formik.handleChange} />
+                                                {formik.errors.name ? (
+                                                    <span className='error-text'>{formik.errors.name}</span>
+                                                ) : null}
+                                            </Form.Group>
+                                            <Form.Group className="col-md-4 mt-3">
+                                                <Form.Label>Primer apellido</Form.Label>
+                                                <Form.Control type="text" placeholder="Herrera" name="surname" value={formik.values.surname}
+                                                    onChange={formik.handleChange} />
+                                                {formik.errors.surname ? (
+                                                    <span className='error-text'>{formik.errors.surname}</span>
+                                                ) : null}
+                                            </Form.Group>
+                                            <Form.Group className="col-md-4 mt-3">
+                                                <Form.Label>Segundo apellido</Form.Label>
+                                                <Form.Control type="text" placeholder="Ibarra" name="secondSurname" value={formik.values.secondSurname}
+                                                    onChange={formik.handleChange} />
+                                                {formik.errors.secondSurname ? (
+                                                    <span className='error-text'>{formik.errors.secondSurname}</span>
+                                                ) : null}
+                                            </Form.Group>
+                                            <Form.Group className="col-md-6 mt-3">
+                                                <Form.Label>Correo electrónico</Form.Label>
+                                                <Form.Control
+                                                    type="email"
+                                                    placeholder="utez@utez.edu.mx" name="email" value={formik.values.email}
+                                                    onChange={formik.handleChange} />
+                                                {formik.errors.email ? (
+                                                    <span className='error-text'>{formik.errors.email}</span>
+                                                ) : null}
+                                            </Form.Group>
+                                            <Form.Group className="col-md-6 mt-5">
+                                                <Form.Text muted>
+                                                    La contraseña del usuario será la misma que su correo
+                                                </Form.Text>
+                                            </Form.Group>
+                                            <div className="d-grid gap-2 mt-3">
+                                                <Button type="submit" style={{ background: "#042B61", borderColor: "#042B61" }}>
+                                                    Registrar
+                                                </Button>
                                             </div>
-                                        </Card.Body>
-                                    </Container>
+                                        </Form>
+                                    </Card.Body>
                                 </div>
                             </Collapse>
                         </Card>

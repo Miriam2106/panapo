@@ -109,7 +109,7 @@ export const LoginScreen = (props) => {
                 </Col>
                 <Form onSubmit={formik.handleSubmit}>
                   <FormGroup>
-                    <InputGroup className="mb-3">
+                    <InputGroup className="mt-4">
                       <FormControl
                         placeholder="Correo electrónico"
                         id="username"
@@ -129,7 +129,7 @@ export const LoginScreen = (props) => {
                     ) : null}
                   </FormGroup>
                   <FormGroup>
-                    <InputGroup className="mb-3">
+                    <InputGroup className="mt-4">
                       <FormControl
                         placeholder="Contraseña"
                         id="password"
