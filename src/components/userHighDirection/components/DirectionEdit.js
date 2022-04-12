@@ -41,8 +41,7 @@ export const DirectionEdit = ({
     formikModify.values.name = name;
     formikModify.values.surname = surname;
     formikModify.values.secondSurname = secondSurname;
-    console.log(values)
-  }, [isOpenUpdate, name]);
+  }, [isOpenUpdate]);
 
   const formikModify = useFormik({
     initialValues: {
@@ -86,8 +85,6 @@ export const DirectionEdit = ({
           id: status
         }
       };
-      console.log(dataPerson)
-      console.log(dataPerson.person)
       Alert.fire({
         title: titleConfirmacion,
         text: msjConfirmacion,
@@ -198,7 +195,7 @@ export const DirectionEdit = ({
 
   return (
     <>
-      <Modal show={isOpenUpdate} onHide={handleCloseForm}>
+      <Modal show={isOpenUpdate} onHide={handleCloseForm} size="lg">
         <Modal.Header closeButton className="backgroundHeadModal" closeVariant="white">
           <Modal.Title>Modificar usuario</Modal.Title>
         </Modal.Header>

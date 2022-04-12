@@ -43,7 +43,7 @@ export const DirectionDetails = ({
 
   return (
     <>
-      <Modal show={isOpenDetails} onHide={handleCloseForm}>
+      <Modal show={isOpenDetails} onHide={handleCloseForm} size="lg">
         <Modal.Header
           closeButton
           className="backgroundHeadModal"

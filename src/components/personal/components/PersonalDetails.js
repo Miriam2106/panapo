@@ -56,13 +56,13 @@ export const PersonalDetails = ({
 
     return (
         <>
-            <Modal show={isOpenDetails} onHide={handleCloseForm}>
+            <Modal show={isOpenDetails} onHide={handleCloseForm} size="lg">
                 <Modal.Header closeButton className="backgroundHeadModal" closeVariant="white">
                     <Modal.Title>Detalles del personal</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form className="row">
-                        <Form.Group className="col-md-4">
+                        <Form.Group className="col-md-4 mb-4">
                             <Form.Label className="form-label">Nombre</Form.Label>
                             <Form.Control
                                 name="name"
@@ -71,7 +71,7 @@ export const PersonalDetails = ({
                                 readOnly
                             />
                         </Form.Group>
-                        <Form.Group className="col-md-4">
+                        <Form.Group className="col-md-4 mb-4">
                             <Form.Label className="form-label">Primer apellido</Form.Label>
                             <Form.Control
                                 name="surname"
@@ -80,7 +80,7 @@ export const PersonalDetails = ({
                                 readOnly
                             />
                         </Form.Group>
-                        <Form.Group className="col-md-4">
+                        <Form.Group className="col-md-4 mb-4">
                             <Form.Label className="form-label">Segundo apellido</Form.Label>
                             <Form.Control
                                 name="secondSurname"
@@ -89,7 +89,7 @@ export const PersonalDetails = ({
                                 readOnly
                             />
                         </Form.Group>
-                        <Form.Group className="col-md-6 topBottom">
+                        <Form.Group className="col-md-6 mb-4">
                             <Form.Label className="form-label">Correo</Form.Label>
                             <Form.Control
                                 name="email"
@@ -98,7 +98,7 @@ export const PersonalDetails = ({
                                 readOnly
                             />
                         </Form.Group>
-                        <Form.Group className="col-md-6 topBottom">
+                        <Form.Group className="col-md-6 mb-4">
                             <Form.Label className="form-label">Fecha de nacimiento</Form.Label>
                             <Form.Control
                                 name="dateBirth"
@@ -107,7 +107,7 @@ export const PersonalDetails = ({
                                 readOnly
                             />
                         </Form.Group>
-                        <Form.Group className="col-md-6 topBottom">
+                        <Form.Group className="col-md-6 mb-4">
                             <Form.Label className="form-label">Teléfono</Form.Label>
                             <Form.Control
                                 name="phone"
@@ -116,7 +116,7 @@ export const PersonalDetails = ({
                                 readOnly
                             />
                         </Form.Group>
-                        <Form.Group className="col-md-6">
+                        <Form.Group className="col-md-6 mb-4">
                             <Form.Label>Rol</Form.Label>
                             <Form.Control
                                 name="profession"

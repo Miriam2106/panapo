@@ -220,9 +220,8 @@ export const DirectionList = () => {
                                 "username": row.username,
                             });
                             setIsOpenDetails(true);
-                        }}
-                    >
-                        <FeatherIcon icon="info" />
+                        }}>
+                        <FeatherIcon icon="info"/>
                     </Button>
                 </div>
             ),
@@ -231,9 +230,7 @@ export const DirectionList = () => {
             name: <div><h6>Modificar</h6></div>,
             cell: (row) => (
                 <div>
-                    <Button
-                        variant="warning"
-                        size="md"
+                    <Button variant="warning" size="md"
                         onClick={() => {
                             setValues({
                                 "id": row.id,
@@ -244,8 +241,7 @@ export const DirectionList = () => {
                                 "surname": row.person.surname,
                                 "secondSurname": row.person.secondSurname,
                                 "statusPerson": row.person.status.id
-                            });
-                            console.log(values)
+                            })
                             setIsOpenUpdate(true)
                         }}
                     >
@@ -298,7 +294,7 @@ export const DirectionList = () => {
                 <section className="content-header">
                     <div className="container-fluid">
                         <div className="row mb-2">
-                            <div className="col-sm-6">
+                            <div className="col-sm-12">
                                 <h1 className="font-weight-bold">Gestión de usuarios de alta dirección</h1>
                             </div>
                         </div>

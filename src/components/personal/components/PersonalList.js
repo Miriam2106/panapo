@@ -191,20 +191,23 @@ export const PersonalList = () => {
         {
             name: <h6>#</h6>,
             cell: (row, index) => <div><h6>{index + 1}</h6></div>,
-            width: "4%"
+            width: "5%"
         },
         {
             name: <h6>Nombre</h6>,
             cell: (row) => <div className="txt4">{row.name + " "} {row.surname + " "} {row.secondSurname}</div>,
+            width: "25%"
         },
         {
             name: <h6>Correo</h6>,
             cell: (row) => <div className="txt4">{row.email}</div>,
+            width: "25%"
         },
         ,
         {
             name: <h6>Rol</h6>,
             cell: (row) => <div className="txt4">{row.profession.description}</div>,
+            width: "10%"
         },
         {
             name: <div><h6>Detalles</h6></div>,
