@@ -170,7 +170,7 @@ export const DirectionList = () => {
                                 "secondSurname": row.person.secondSurname,
                                 "username": row.username,
                             });
-                            console.log(values)
+                            console.log(row)
                             setIsOpenDetails(true);
                         }}
                     >
@@ -187,7 +187,16 @@ export const DirectionList = () => {
                         variant="warning"
                         size="md"
                         onClick={() => {
-                            setValues(row)
+                            setValues({
+                                "id": row.id,
+                                "username": row.username,
+                                "status": row.status,
+                                "idPerson": row.person.id,
+                                "name": row.person.name,
+                                "surname": row.person.surname,
+                                "secondSurname": row.person.secondSurname,
+                                "statusPerson": row.person.id
+                            });
                             setIsOpenUpdate(true)
                         }}
                     >
@@ -248,7 +257,7 @@ export const DirectionList = () => {
                 </section>
                 <Row>
                     <Col>
-                        <Card>
+                        <Card className="mb-0">
                             <Card.Header
                                 onClick={() => setIsOpen(!isOpen)}
                                 aria-controls="example-collapse-text"

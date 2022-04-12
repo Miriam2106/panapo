@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import FeatherIcon from "feather-icons-react";
 import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../shared/plugins/alert";
+import * as yup from "yup";
 import axios from "../../../shared/plugins/axios";
+import { useFormik } from "formik";
 
 export const DirectionEdit = ({
   isOpenUpdate,
@@ -10,7 +11,7 @@ export const DirectionEdit = ({
   name,
   surname,
   secondSurname,
-  
+  getDirectives
 }) => {
   const [values, setValues] = useState({ name: name, surname: surname, secondSurname: secondSurname });
 
@@ -32,6 +33,93 @@ export const DirectionEdit = ({
     const { name, value } = event.target;
     setValues({ ...values, [name]: value });
   }
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      surname: "",
+      secondSurname: "",
+      email: ""
+    },
+    validationSchema: yup.object().shape({
+      name: yup.string().required("Campo obligatorio"),
+      surname: yup.string().required("Campo obligatorio"),
+      secondSurname: yup.string().required("Campo obligatorio"),
+    }),
+    onSubmit: (values) => {
+      const person = {
+        password: values.email,
+        person: {
+          name: values.name,
+          surname: values.surname,
+          secondSurname: values.secondSurname,
+          email: values.email,
+          profession: {
+            id: 3,
+            description: "Directivo"
+          },
+          status: {
+            id: 1,
+            description: "Activo"
+          }
+        },
+        authorities: [
+          {
+            id: 1,
+            description: "Directivo"
+          }
+        ],
+        status: {
+          id: 1,
+          description: "Activo"
+        }
+      };
+      Alert.fire({
+        title: titleConfirmacion,
+        text: msjConfirmacion,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#198754",
+        cancelButtonColor: "#dc3545",
+        showCancelButton: true,
+        reverseButtons: true,
+        showLoaderOnConfirm: true,
+        icon: "warning",
+        preConfirm: () => {
+          return axios({ url: "/user/", method: "POST", data: JSON.stringify(person) })
+            .then((response) => {
+              console.log(response)
+              if (!response.error) {
+                getDirectives();
+                Alert.fire({
+                  title: titleExito,
+                  text: msjExito,
+                  confirmButtonColor: "#198754",
+                  icon: "success",
+                  confirmButtonText: "Aceptar",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    handleCloseForm();
+                  }
+                });
+              }
+              return response;
+            }).catch((error) => {
+              console.log(error)
+              Alert.fire({
+                title: titleError,
+                text: msjError,
+                cancelButtonColor: "#198754",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+              });
+            });
+        },
+        backdrop: true,
+        allowOutsideClick: !Alert.isLoading
+      });
+    },
+  });
 
   return (
     <>

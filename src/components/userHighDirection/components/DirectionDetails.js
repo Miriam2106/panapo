@@ -21,7 +21,6 @@ export const DirectionDetails = ({
 }) => {
   
   const [values, setValues] = useState({ name: name, surname: surname, secondSurname: secondSurname, username: username});
-  //console.log(values)
 
   const handleCloseForm = () => {
     handleClose(false);
@@ -40,7 +39,7 @@ export const DirectionDetails = ({
       secondSurname: secondSurname,
       username: username,
     });
-  }, []);
+  }, [isOpenDetails]);
 
   return (
     <>

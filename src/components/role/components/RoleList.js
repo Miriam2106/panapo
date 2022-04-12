@@ -22,14 +22,8 @@ export const RoleList = () => {
     const [isOpenUpdate, setIsOpenUpdate] = useState(false);
 
     const filteredItems = roles.filter(
-        (item) => item.description && item.description.toLowerCase().includes(filterText.toLowerCase()) || item.acronym && item.acronym.toLowerCase().includes(filterText.toLowerCase()) ,
+        (item) => item.description && item.description.toLowerCase().includes(filterText.toLowerCase()) || item.acronym && item.acronym.toLowerCase().includes(filterText.toLowerCase())
     );
-
-    useEffect(() => {
-        setIsLoading(true);
-        document.title = "PANAPO | Gestión de Roles";
-        getRoles();
-    }, []);
 
     const getRoles = () => {
         axios({ url: "/rol/", method: "GET" })
@@ -114,11 +108,16 @@ export const RoleList = () => {
         },
     });
 
-
     const handleCloseForm = () => {
         formik.resetForm();
         setIsOpen(false);
     };
+
+    useEffect(() => {
+        setIsLoading(true);
+        document.title = "PANAPO | Gestión de Roles";
+        getRoles();
+    }, []);
 
     const columns = [
         {
