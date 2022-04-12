@@ -49,6 +49,53 @@ export const DirectionList = () => {
             });
     };
 
+    const onDelete = (idDelete) =>{
+        console.log(idDelete)
+        Alert.fire({
+            title: titleConfirmacion,
+            text: msjConfirmacion,
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#198754",
+            cancelButtonColor: "#dc3545",
+            showCancelButton: true,
+            reverseButtons: true,
+            showLoaderOnConfirm: true,
+            icon: "warning",
+            preConfirm: () => {
+                return axios({ url: "/user/"+idDelete, method: "DELETE"})
+                    .then((response) => {
+                        if (!response.error) {
+                            getDirectives();
+                            Alert.fire({
+                                title: titleExito,
+                                text: msjExito,
+                                confirmButtonColor: "#198754",
+                                icon: "success",
+                                confirmButtonText: "Aceptar",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    handleCloseForm();
+                                }
+                            });
+                        }
+                        return response;
+                    }).catch((error) => {
+                        console.log(error)
+                        Alert.fire({
+                            title: titleError,
+                            text: msjError,
+                            cancelButtonColor: "#198754",
+                            icon: "error",
+                            confirmButtonText: "Aceptar"
+                        });
+                    });
+            },
+            backdrop: true,
+            allowOutsideClick: !Alert.isLoading
+        });
+    }
+
     const formik = useFormik({
         initialValues: {
             name: "",
@@ -60,6 +107,7 @@ export const DirectionList = () => {
             name: yup.string().required("Campo obligatorio"),
             surname: yup.string().required("Campo obligatorio"),
             secondSurname: yup.string().required("Campo obligatorio"),
+            email: yup.string().email("Ingresa un correo correcto").required("Campo obligatorio"),
         }),
         onSubmit: (values) => {
             const person = {
@@ -89,6 +137,7 @@ export const DirectionList = () => {
                     description: "Activo"
                 }
             };
+            console.log(person)
             Alert.fire({
                 title: titleConfirmacion,
                 text: msjConfirmacion,
@@ -103,7 +152,6 @@ export const DirectionList = () => {
                 preConfirm: () => {
                     return axios({ url: "/user/", method: "POST", data: JSON.stringify(person) })
                         .then((response) => {
-                            console.log(response)
                             if (!response.error) {
                                 getDirectives();
                                 Alert.fire({
@@ -150,14 +198,15 @@ export const DirectionList = () => {
         {
             name: <h6 >#</h6>,
             cell: (row, index) => <div><h6>{index + 1}</h6></div>,
-            width: "4%"
+            width: "5%"
         },
         {
             name: <h6>Nombre del directivo</h6>,
             cell: (row) => <div className="txt4">{row.person.name + " "}{row.person.surname + " "}{row.person.secondSurname}</div>,
+            width: "40%"
         },
         {
-            name: <div><h6>Detalles</h6></div>,
+            name: <h6>Detalles</h6>,
             cell: (row) => (
                 <div>
                     <Button
@@ -170,7 +219,6 @@ export const DirectionList = () => {
                                 "secondSurname": row.person.secondSurname,
                                 "username": row.username,
                             });
-                            console.log(row)
                             setIsOpenDetails(true);
                         }}
                     >
@@ -190,13 +238,14 @@ export const DirectionList = () => {
                             setValues({
                                 "id": row.id,
                                 "username": row.username,
-                                "status": row.status,
+                                "status": row.status.id,
                                 "idPerson": row.person.id,
                                 "name": row.person.name,
                                 "surname": row.person.surname,
                                 "secondSurname": row.person.secondSurname,
-                                "statusPerson": row.person.id
+                                "statusPerson": row.person.status.id
                             });
+                            console.log(values)
                             setIsOpenUpdate(true)
                         }}
                     >
@@ -213,7 +262,7 @@ export const DirectionList = () => {
                         variant="danger"
                         size="md"
                         onClick={() => {
-                            setValues(row);
+                            onDelete(row.id);
                         }}
                     >
                         <FeatherIcon icon="trash" />
@@ -287,7 +336,7 @@ export const DirectionList = () => {
                                                 <Form.Control type="text" placeholder="Emmanuel" name="name" value={formik.values.name}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.name ? (
-                                                    <span className='error-text'>{formik.errors.name}</span>
+                                                    <span className='text-danger'>{formik.errors.name}</span>
                                                 ) : null}
                                             </Form.Group>
                                             <Form.Group className="col-md-4 mt-3">
@@ -295,7 +344,7 @@ export const DirectionList = () => {
                                                 <Form.Control type="text" placeholder="Herrera" name="surname" value={formik.values.surname}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.surname ? (
-                                                    <span className='error-text'>{formik.errors.surname}</span>
+                                                    <span className='text-danger'>{formik.errors.surname}</span>
                                                 ) : null}
                                             </Form.Group>
                                             <Form.Group className="col-md-4 mt-3">
@@ -303,7 +352,7 @@ export const DirectionList = () => {
                                                 <Form.Control type="text" placeholder="Ibarra" name="secondSurname" value={formik.values.secondSurname}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.secondSurname ? (
-                                                    <span className='error-text'>{formik.errors.secondSurname}</span>
+                                                    <span className='text-danger'>{formik.errors.secondSurname}</span>
                                                 ) : null}
                                             </Form.Group>
                                             <Form.Group className="col-md-6 mt-3">
@@ -313,7 +362,7 @@ export const DirectionList = () => {
                                                     placeholder="utez@utez.edu.mx" name="email" value={formik.values.email}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.email ? (
-                                                    <span className='error-text'>{formik.errors.email}</span>
+                                                    <span className='text-danger'>{formik.errors.email}</span>
                                                 ) : null}
                                             </Form.Group>
                                             <Form.Group className="col-md-6 mt-5">
@@ -322,7 +371,8 @@ export const DirectionList = () => {
                                                 </Form.Text>
                                             </Form.Group>
                                             <div className="d-grid gap-2 mt-3">
-                                                <Button type="submit" style={{ background: "#042B61", borderColor: "#042B61" }}>
+                                                <Button type="submit" style={{ background: "#042B61", borderColor: "#042B61" }}
+                                                    disabled={!(formik.isValid && formik.dirty)}>
                                                     Registrar
                                                 </Button>
                                             </div>

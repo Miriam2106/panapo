@@ -8,72 +8,86 @@ import { useFormik } from "formik";
 export const DirectionEdit = ({
   isOpenUpdate,
   handleClose,
+  id,
+  username,
+  status,
+  idPerson,
   name,
   surname,
   secondSurname,
+  statusPerson,
   getDirectives
 }) => {
-  const [values, setValues] = useState({ name: name, surname: surname, secondSurname: secondSurname });
-
+  const [values, setValues] = useState({ id: id, username: username, status: status, idPerson: idPerson, name: name, surname: surname, secondSurname: secondSurname, statusPerson: statusPerson });
+  const [equalsPassword, setEqualsPassword] = useState(true)
   //console.log(person)
   const handleCloseForm = () => {
-    handleClose(false);
+    formikModify.resetForm();
     setValues({});
+    handleClose(false);
   };
 
   useEffect(() => {
     setValues({
+      id: id,
+      username: username,
+      status: status,
+      idPerson: idPerson,
       name: name,
       surname: surname,
-      secondSurname: secondSurname
+      secondSurname: secondSurname,
+      statusPerson: statusPerson,
     });
-  }, [name, surname, secondSurname]);
+    formikModify.values.name = name;
+    formikModify.values.surname = surname;
+    formikModify.values.secondSurname = secondSurname;
+    console.log(values)
+  }, [isOpenUpdate, name]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setValues({ ...values, [name]: value });
-  }
-
-  const formik = useFormik({
+  const formikModify = useFormik({
     initialValues: {
       name: "",
       surname: "",
       secondSurname: "",
-      email: ""
+      password: "",
+      confirmPassword: ""
     },
     validationSchema: yup.object().shape({
       name: yup.string().required("Campo obligatorio"),
       surname: yup.string().required("Campo obligatorio"),
       secondSurname: yup.string().required("Campo obligatorio"),
     }),
-    onSubmit: (values) => {
-      const person = {
-        password: values.email,
+    onSubmit: (valuesFormik) => {
+      const dataPerson = {
+        id: values.id,
+        username: values.username,
         person: {
-          name: values.name,
-          surname: values.surname,
-          secondSurname: values.secondSurname,
-          email: values.email,
+          id: values.idPerson,
+          name: valuesFormik.name,
+          surname: valuesFormik.surname,
+          secondSurname: valuesFormik.secondSurname,
+          email: values.username,
           profession: {
             id: 3,
             description: "Directivo"
           },
           status: {
-            id: 1,
-            description: "Activo"
+            id: statusPerson
           }
         },
         authorities: [
           {
             id: 1,
-            description: "Directivo"
+            description: "Directivo",
+            acronym: "Directivo"
           }
         ],
         status: {
-          id: 1,
-          description: "Activo"
+          id: status
         }
       };
+      console.log(dataPerson)
+      console.log(dataPerson.person)
       Alert.fire({
         title: titleConfirmacion,
         text: msjConfirmacion,
@@ -86,34 +100,95 @@ export const DirectionEdit = ({
         showLoaderOnConfirm: true,
         icon: "warning",
         preConfirm: () => {
-          return axios({ url: "/user/", method: "POST", data: JSON.stringify(person) })
-            .then((response) => {
-              console.log(response)
-              if (!response.error) {
-                getDirectives();
-                Alert.fire({
-                  title: titleExito,
-                  text: msjExito,
-                  confirmButtonColor: "#198754",
-                  icon: "success",
-                  confirmButtonText: "Aceptar",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    handleCloseForm();
-                  }
-                });
+          //si hay valores en las contraseñas
+          if (valuesFormik.password != "" && valuesFormik.confirmPassword != "") {
+            //si manda contraseñas y son iguales
+            if (valuesFormik.password === valuesFormik.confirmPassword) {
+              setEqualsPassword(true)
+              let data = {
+                ...dataPerson,
+                password: valuesFormik.password,
               }
-              return response;
-            }).catch((error) => {
-              console.log(error)
-              Alert.fire({
-                title: titleError,
-                text: msjError,
-                cancelButtonColor: "#198754",
-                icon: "error",
-                confirmButtonText: "Aceptar"
+              console.log(data)
+              //modificar usuario
+              return axios({ url: "/user/update", method: "PUT", data: JSON.stringify(data) })
+                .then((response) => {
+                  if (!response.error) {
+                    //modificar persona
+                    return axios({ url: "/person/", method: "PUT", data: JSON.stringify(dataPerson.person) })
+                      .then((response) => {
+                        if (!response.error) {
+                          getDirectives();
+                          Alert.fire({
+                            title: titleExito,
+                            text: msjExito,
+                            confirmButtonColor: "#198754",
+                            icon: "success",
+                            confirmButtonText: "Aceptar",
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleCloseForm();
+                            }
+                          });
+                        }
+                        return response;
+                      }).catch((error) => {
+                        console.log(error)
+                        Alert.fire({
+                          title: titleError,
+                          text: msjError,
+                          cancelButtonColor: "#198754",
+                          icon: "error",
+                          confirmButtonText: "Aceptar"
+                        });
+                      });
+                  }
+                  return response;
+                }).catch((error) => {
+                  console.log(error)
+                  Alert.fire({
+                    title: titleError,
+                    text: msjError,
+                    cancelButtonColor: "#198754",
+                    icon: "error",
+                    confirmButtonText: "Aceptar"
+                  });
+                });
+            } else {
+              setEqualsPassword(false)
+            }
+          } else {
+            //no manda contraseña
+            setEqualsPassword(true)
+            return axios({ url: "/person/", method: "PUT", data: JSON.stringify(dataPerson.person) })
+              .then((response) => {
+                console.log(response)
+                if (!response.error) {
+                  getDirectives();
+                  Alert.fire({
+                    title: titleExito,
+                    text: msjExito,
+                    confirmButtonColor: "#198754",
+                    icon: "success",
+                    confirmButtonText: "Aceptar",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      handleCloseForm();
+                    }
+                  });
+                }
+                return response;
+              }).catch((error) => {
+                console.log(error)
+                Alert.fire({
+                  title: titleError,
+                  text: msjError,
+                  cancelButtonColor: "#198754",
+                  icon: "error",
+                  confirmButtonText: "Aceptar"
+                });
               });
-            });
+          }
         },
         backdrop: true,
         allowOutsideClick: !Alert.isLoading
@@ -128,30 +203,51 @@ export const DirectionEdit = ({
           <Modal.Title>Modificar usuario</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form className="row">
-            <Form.Group className="col-md-6 mb-4">
+          <Form className="row" onSubmit={formikModify.handleSubmit}>
+            <Form.Group className="col-md-4 mb-4">
               <Form.Label className="form-label">Nombre</Form.Label>
               <Form.Control
                 name="name"
-                value={values.name}
-                onChange={handleChange}
+                value={formikModify.values.name}
+                onChange={formikModify.handleChange}
               />
             </Form.Group>
-            <Form.Group className="col-md-6 mb-4">
+            <Form.Group className="col-md-4 mb-4">
               <Form.Label className="form-label">Primer apellido</Form.Label>
               <Form.Control
                 name="surname"
-                value={values.surname}
-                onChange={handleChange}
+                value={formikModify.values.surname}
+                onChange={formikModify.handleChange}
               />
             </Form.Group>
-            <Form.Group className="col-md-6 mb-4">
+            <Form.Group className="col-md-4 mb-4">
               <Form.Label className="form-label">Segundo apellido</Form.Label>
               <Form.Control
                 name="secondSurname"
-                value={values.secondSurname}
-                onChange={handleChange}
+                value={formikModify.values.secondSurname}
+                onChange={formikModify.handleChange}
               />
+            </Form.Group>
+            <Form.Group className="col-md-6 mb-4">
+              <Form.Label className="form-label">Contraseña</Form.Label>
+              <Form.Control
+                name="password"
+                placeholder="********"
+                value={formikModify.values.password}
+                onChange={formikModify.handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="col-md-6 mb-4">
+              <Form.Label className="form-label">Confirmar contraseña</Form.Label>
+              <Form.Control
+                name="confirmPassword"
+                placeholder="********"
+                value={formikModify.values.confirmPassword}
+                onChange={formikModify.handleChange}
+              />
+              {formikModify.values.confirmPassword != "" && formikModify.values.password != "" && formikModify.values.confirmPassword != formikModify.values.password ? (
+                <span className='text-danger'>Las contraseñas no son iguales</span>
+              ) : null}
             </Form.Group>
             <Form.Group className="mb-4 mt-3">
               <Row>
@@ -163,7 +259,7 @@ export const DirectionEdit = ({
                     style={{ background: "#042B61", borderColor: "#042B61" }}
                     className="ms-3"
                     type="submit"
-                    disabled={false}
+                    disabled={!(formikModify.isValid && formikModify.dirty)}
                   >
                     Guardar
                   </Button>

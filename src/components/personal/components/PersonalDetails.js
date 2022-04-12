@@ -52,7 +52,7 @@ export const PersonalDetails = ({
             profession: profession,
             status: status,
         });
-    }, [id, name, surname, secondSurname, email, dateBirth, phone, profession, status]);
+    }, [isOpenDetails]);
 
     return (
         <>

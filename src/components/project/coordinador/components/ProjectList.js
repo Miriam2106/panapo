@@ -16,18 +16,6 @@ import "../../../../assets/css/util.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 export const ProjectList = () => {
-
-    let value = "";
-    const navigation = useNavigate();
-
-    const handleReport = () => {
-        navigation('/report', { state: { id: value } });
-    }
-
-    const setValue = (id) => {
-        value = id;
-    }
-
     const [filterText, setFilterText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingProspect, setIsLoadingProspect] = useState(false);
@@ -48,6 +36,17 @@ export const ProjectList = () => {
     const [isOpenUpdateP, setIsOpenUpdateP] = useState(false);
     const [isOpenDetailsP, setIsOpenDetailsP] = useState(false);
     const [isOpenStart, setIsOpenStart] = useState(false);
+
+    let value = "";
+    const navigation = useNavigate();
+
+    const handleReport = () => {
+        navigation('/report', { state: { id: value } });
+    }
+
+    const setValue = (id) => {
+        value = id;
+    }
 
     useEffect(() => {
         setIsLoading(true);
@@ -312,11 +311,11 @@ export const ProjectList = () => {
     return (
         <div className="content-wrapper screenHeight">
             <Container fluid>
-                <section class="content-header">
-                    <div class="container-fluid">
-                        <div class="row mb-2">
-                            <div class="col-sm-6">
-                                <h1 class="font-weight-bold">Gestión de proyectos</h1>
+                <section className="content-header">
+                    <div className="container-fluid">
+                        <div className="row mb-2">
+                            <div className="col-sm-6">
+                                <h1 className="font-weight-bold">Gestión de proyectos</h1>
                             </div>
                         </div>
                     </div>

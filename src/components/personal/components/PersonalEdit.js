@@ -14,7 +14,6 @@ import axios from "../../../shared/plugins/axios";
 export const PersonalEdit = ({
     isOpenUpdate,
     handleClose,
-    setPersonal,
     getPersonal,
     id,
     name,
@@ -116,7 +115,7 @@ export const PersonalEdit = ({
             phone: phone,
             profession: profession,
         });
-    }, [id, status, name, surname, secondSurname, email, dateBirth, phone, profession]);
+    }, [isOpenUpdate]);
 
     return (
         <>

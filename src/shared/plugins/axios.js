@@ -10,7 +10,6 @@ const requestHandler = (request) => {
   if (token != null) {
     request.headers["Authorization"] = `Bearer${token}`;
   }
-  console.log(token)
   return request;
 };
 

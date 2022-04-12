@@ -11,7 +11,6 @@ import { FilterComponent } from "../../../shared/components/FilterComponent";
 import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../shared/plugins/alert";
 import main from "../../../assets/css/main.css";
 
-
 export const RoleList = () => {
     const [roles, setRoles] = useState([]);
     const [filterText, setFilterText] = useState("");
@@ -115,22 +114,25 @@ export const RoleList = () => {
 
     useEffect(() => {
         setIsLoading(true);
-        document.title = "PANAPO | Gestión de Roles";
         getRoles();
+        document.title = "PANAPO | Gestión de Roles";
     }, []);
 
     const columns = [
         {
             name: <h6>#</h6>,
             cell: (row, index) => <h6>{index + 1}</h6>,
+            width: "15%"
         },
         {
             name: <h6>Acrónimo</h6>,
             cell: (row) => <div className="txt4">{row.acronym}</div>,
+            width: "25%"
         },
         {
             name: <h6>Descripción</h6>,
             cell: (row) => <div className="txt4">{row.description}</div>,
+            width: "40%"
         },
         {
             name: <div><h6>Modificar</h6></div>,
@@ -142,7 +144,8 @@ export const RoleList = () => {
                     }}>
                     <FeatherIcon icon="edit" />
                 </Button>
-            </div>
+            </div>,
+            align: "center"
         },
     ];
 
