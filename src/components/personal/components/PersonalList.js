@@ -8,7 +8,6 @@ import { PersonalDetails } from "./PersonalDetails";
 import { PersonalEdit } from "./PersonalEdit"
 import { CustomLoader } from "../../../shared/components/CustomLoader";
 import { FilterComponent } from "../../../shared/components/FilterComponent";
-import { Link, useNavigate } from 'react-router-dom';
 import * as yup from "yup";
 import axios from "../../../shared/plugins/axios";
 import { useFormik } from "formik";
@@ -125,6 +124,7 @@ export const PersonalList = () => {
     useEffect(() => {
         setIsLoading(true);
         getPersonal();
+        document.title = "PANAPO | Personal";
     }, []);
 
     const statusChange = (personal) => {
@@ -191,7 +191,7 @@ export const PersonalList = () => {
         {
             name: <h6>#</h6>,
             cell: (row, index) => <div><h6>{index + 1}</h6></div>,
-            width: "5%"
+            width: "6%"
         },
         {
             name: <h6>Nombre</h6>,
@@ -297,13 +297,9 @@ export const PersonalList = () => {
                                     <Col className="text-end">
                                         <Col>
                                             {isOpen ? (
-                                                <FeatherIcon icon="minus" onClick={() => setIsOpen(!isOpen)}
-                                                    aria-controls="example-collapse-text"
-                                                    aria-expanded={isOpen} />
+                                                <FeatherIcon icon="minus"/>
                                             ) : (
-                                                <FeatherIcon icon="plus" onClick={() => setIsOpen(!isOpen)}
-                                                    aria-controls="example-collapse-text"
-                                                    aria-expanded={isOpen} />
+                                                <FeatherIcon icon="plus"/>
                                             )}
                                         </Col>
                                     </Col>
@@ -411,7 +407,6 @@ export const PersonalList = () => {
                                 <PersonalEdit
                                     isOpenUpdate={isOpenUpdate}
                                     handleClose={setIsOpenUpdate}
-                                    setPersonal={setPersonal}
                                     getPersonal={getPersonal}
                                     {...values}
                                 />

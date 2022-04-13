@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import FeatherIcon from "feather-icons-react";
-import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../shared/plugins/alert";
-import axios from "../../../shared/plugins/axios";
-import { Link, useNavigate } from 'react-router-dom';
 
 export const PersonalDetails = ({
     isOpenDetails,

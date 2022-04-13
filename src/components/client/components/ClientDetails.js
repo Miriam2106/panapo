@@ -5,160 +5,163 @@ import FeatherIcon from "feather-icons-react";
 // import axios from "../../../../shared/plugins/axios";
 
 
-export const ClientDetails = ({ 
-  isOpenDetails, 
-  handleClose, 
-  setClients, 
+export const ClientDetails = ({
+  isOpenDetails,
+  handleClose,
+  emailClient,
   name,
   surname,
-  lastname,
-  nameCompany,
+  secondSurname,
+  company,
   typeClient,
+  phoneClient,
+  nameRepre,
+  surnameRepre,
+  secondSurnameRepre,
+  phoneRepre,
+  emailRepre,
+  extension,
   status
 }) => {
 
-    const [values, setValues] = useState({name: name, surname: surname, lastname:lastname, nameCompany: nameCompany, typeClient: typeClient, status: status});
+  const [values, setValues] = useState({
+    emailClient: emailClient, name: name, surname: surname, secondSurname: secondSurname,
+    company: company, typeClient: typeClient, phoneClient: phoneClient, extension: extension, status: status,
+    nameRepre: nameRepre, surnameRepre: surnameRepre, secondSurnameRepre: secondSurnameRepre, phoneRepre: phoneRepre, emailRepre: emailRepre
+  });
 
-    // const handleChange = (event) =>{
-    //   const { name, value } = event.target;
-    //   setValues({ ...values, [name]: value});
-    // }  
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValues({ ...values, [name]: value });
+  }
 
-    // const handleSubmit = (event) =>{
-    //   event.preventDefault();
-    //   console.log(values);
-    //   Alert.fire({
-    //   title: titleConfirmacion,
-    //   text: msjConfirmacion,
-    //   confirmButtonText: "Aceptar",
-    //   cancelButtonText: "Cancelar",
-    //   showCancelButton: true,
-    //   reverseButtons: true,
-    //   showLoaderOnConfirm: true,
-    //   icon: "warning",
-    //   preConfirm: () => {
-    //     return axios({
-    //       url: "/category/",
-    //       method: "PUT",
-    //       data: JSON.stringify(values),
-    //     })
-    //       .then((response) => {
-    //         console.log(response);
-    //         if (!response.error) {
-    //           setCategories((categories) => [
-    //             ...categories.filter((it) => it.id !== values.id),
-    //             values,
-    //           ]);
-    //           handleCloseForm();
-    //           Alert.fire({
-    //             title: titleExito,
-    //             text: msjExito,
-    //             icon: "success",
-    //             confirmButtonText: "Aceptar",
-    //           });
-    //         }
-    //         return response;
-    //       })
-    //       .catch((error) => {
-    //         Alert.fire({
-    //           title: titleError,
-    //           confirmButtonColor: "#198754",
-    //           text: msjError,
-    //           icon: "error",
-    //           confirmButtonText: "Aceptar",
-    //         });
-    //       });
-    //   },
-    //   backdrop: true,
-    //   allowOutsideClick: !Alert.isLoading,
-    //   });
-    // };
+  const handleCloseForm = () => {
+    handleClose(false);
+    setValues({});
+  };
 
-    const handleCloseForm = () =>{
-      handleClose();
-      setValues({});
-    };
+  useEffect(() => {
+    setValues({
+      emailClient: emailClient,
+      name: name,
+      surname: surname,
+      secondSurname: secondSurname,
+      company: company,
+      typeClient: typeClient,
+      phoneClient: phoneClient,
+      extension: extension,
+      nameRepre: nameRepre,
+      surnameRepre: surnameRepre,
+      secondSurnameRepre: secondSurnameRepre,
+      phoneRepre: phoneRepre,
+      emailRepre: emailRepre
+    });
+  }, [isOpenDetails]);
 
-    useEffect(() => {
-      setValues({
-        name: name,
-        surname: surname,
-        lastname: lastname,
-        nameCompany: nameCompany,
-        typeClient: typeClient
-      });
-    }, [name, surname, lastname, nameCompany, typeClient]);
-  
-    return (
-      <>
-      <Modal show={isOpenDetails} onHide={handleCloseForm}>
+  return (
+    <>
+      <Modal show={isOpenDetails} onHide={handleCloseForm} size="lg">
         <Modal.Header closeButton className="backgroundHeadModal" closeVariant="white">
           <Modal.Title>Detalles del cliente</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form className="row">
-            <Form.Group className="col-md-6">
-              <Form.Label className="form-label">Nombre</Form.Label>
+            <Form.Group className="col-md-4 mb-4">
+              <Form.Label className="form-label font-weight-normal">Nombre</Form.Label>
               <Form.Control
                 name="name"
-                placeholder="Nombre"
                 value={values.name}
+                onChange={handleChange}
                 readOnly
               />
-              {/* {formik.errors.description ? (
-                <span className="error-text">{formik.errors.description}</span>
-              ) : null} */}
             </Form.Group>
-            <Form.Group className="col-md-6">
+            <Form.Group className="col-md-4 mb-4">
               <Form.Label className="form-label">Primer apellido</Form.Label>
               <Form.Control
-                name="name"
-                placeholder="Primer apellido"
+                name="surname"
                 value={values.surname}
+                onChange={handleChange}
                 readOnly
               />
-              {/* {formik.errors.description ? (
-                <span className="error-text">{formik.errors.description}</span>
-              ) : null} */}
             </Form.Group>
-            <Form.Group className="col-md-6 topBottom">
+            <Form.Group className="col-md-4 topBottom">
               <Form.Label className="form-label">Segundo apellido</Form.Label>
               <Form.Control
-                name="name"
-                placeholder="Segundo apellido"
-                value={values.lastname}
+                name="secondSurname"
+                value={values.secondSurname}
+                onChange={handleChange}
                 readOnly
               />
-              {/* {formik.errors.description ? (
-                <span className="error-text">{formik.errors.description}</span>
-              ) : null} */}
             </Form.Group>
-            <Form.Group className="col-md-6 topBottom">
+            <Form.Group className="col-md-6 mb-4">
               <Form.Label className="form-label">Empresa</Form.Label>
               <Form.Control
-                name="name"
-                placeholder="Nombre del proyecto"
-                value={values.nameCompany}
+                name="company"
+                value={values.company}
+                onChange={handleChange}
                 readOnly
               />
-              {/* {formik.errors.description ? (
-                <span className="error-text">{formik.errors.description}</span>
-              ) : null} */}
             </Form.Group>
-            <Form.Group className="col-md-6 topBottom">
+            <Form.Group className="col-md-4 mb-4">
+              <Form.Label className="form-label">Teléfono</Form.Label>
+              <Form.Control
+                name="phoneClient"
+                value={values.phoneClient}
+                onChange={handleChange}
+                readOnly
+              />
+            </Form.Group>
+            <Form.Group className="col-md-2 mb-4">
+              <Form.Label className="form-label">Extensión</Form.Label>
+              <Form.Control
+                name="extension"
+                value={values.extension}
+                onChange={handleChange}
+                readOnly
+              />
+            </Form.Group>
+            <Form.Group className="col-md-6 mb-4">
+              <Form.Label className="form-label">Correo electrónico</Form.Label>
+              <Form.Control
+                name="emailClient"
+                value={values.emailClient}
+                onChange={handleChange}
+                readOnly
+              />
+            </Form.Group>
+            <Form.Group className="col-md-6 mb-4">
               <Form.Label className="form-label">Tipo de cliente</Form.Label>
               <Form.Control
-                name="name"
-                placeholder="Nombre del proyecto"
+                name="typeClient"
                 value={values.typeClient}
+                onChange={handleChange}
                 readOnly
               />
-              {/* {formik.errors.description ? (
-                <span className="error-text">{formik.errors.description}</span>
-              ) : null} */}
             </Form.Group>
-            <br/>
-            <Form.Group className="md-4">
+            <Form.Group className="col-md-12 mb-3" >
+              <h5 className="text-bold">Información del representante del cliente</h5>
+            </Form.Group>
+            <Form.Group className="col-md-4 mb-4" >
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control name="nameRepre" value={values.nameRepre} onChange={handleChange} readOnly/>
+            </Form.Group>
+            <Form.Group className="col-md-4 mb-4" >
+              <Form.Label>Primer apellido</Form.Label>
+              <Form.Control name="surnameRepre" value={values.surnameRepre} onChange={handleChange} readOnly/>
+            </Form.Group>
+            <Form.Group className="col-md-4 mb-4" >
+              <Form.Label>Segundo apellido</Form.Label>
+              <Form.Control name="secondSurnameRepre" value={values.secondSurnameRepre} onChange={handleChange} readOnly/>
+            </Form.Group>
+            <Form.Group className="col-md-6 mb-4" >
+              <Form.Label>Teléfono</Form.Label>
+              <Form.Control name="phoneRepre" value={values.phoneRepre} onChange={handleChange} readOnly/>
+            </Form.Group>
+            <Form.Group className="col-md-6 mb-4" >
+              <Form.Label>Correo eléctronico</Form.Label>
+              <Form.Control name="emailRepre" placeholder="Email" value={values.emailRepre} onChange={handleChange} readOnly/>
+            </Form.Group>
+            <Form.Group className="mb-4 mt-3">
               <Row>
                 <Col className="text-end">
                   <Button variant="secondary" type="button" onClick={handleCloseForm}>
@@ -170,6 +173,6 @@ export const ClientDetails = ({
           </Form>
         </Modal.Body>
       </Modal>
-      </>
-    );
-  };
+    </>
+  );
+};

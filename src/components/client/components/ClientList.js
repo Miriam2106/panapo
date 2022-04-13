@@ -7,18 +7,13 @@ import DataTable from "react-data-table-component";
 import { CustomLoader } from "../../../shared/components/CustomLoader";
 import { FilterComponent } from "../../../shared/components/FilterComponent";
 import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../shared/plugins/alert";
-import { Link, useNavigate } from 'react-router-dom';
+import * as yup from "yup";
+import axios from "../../../shared/plugins/axios";
+import { useFormik } from "formik";
 import "../../../assets/css/main.css";
 
+
 export const ClientList = () => {
-
-    let value = "";
-    const navigation = useNavigate();
-
-    const setValue = (id) => {
-        value = id;
-    }
-
     const [clients, setClients] = useState([]);
     const [filterText, setFilterText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -30,62 +25,149 @@ export const ClientList = () => {
     const [isOpenUpdate, setIsOpenUpdate] = useState(false);
     const [isOpenDetails, setIsOpenDetails] = useState(false);
 
+    const filteredItems = clients.filter(
+        (item) => item.name && item.name.toLowerCase().includes(filterText.toLowerCase()) || item.surname && item.surname.toLowerCase().includes(filterText.toLowerCase()) || item.second_surname && item.second_surname.toLowerCase().includes(filterText.toLowerCase()),
+    );
+
     useEffect(() => {
         setIsLoading(true);
         getClients();
+        document.title = "PANAPO | Clientes";
     }, []);
 
+    const getClients = () => {
+        axios({ url: "/client/", method: "GET" })
+            .then((response) => {
+                setClients(response.data);
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
-    let client = [
-        {
-            "name": "Marco",
-            "surname": "Hernández",
-            "lastname": "Goméz",
-            "nameCompany": "PEMEX",
-            "typeClient": "Interno",
+    const handleCloseForm = () => {
+        formik.resetForm();
+        setIsOpen(false);
+    };
+
+    const formik = useFormik({
+        initialValues: {
+            name: "",
+            surname: "",
+            secondSurname: "",
+            company: "",
+            phoneClient: "",
+            emailClient: "",
+            typeClient: 1,
+            nameRepre: "",
+            surnameRepre: "",
+            secondSurnameRepre: "",
+            phoneRepre: "",
+            emailRepre: "",
+            extension: ""
         },
-        {
-            "name": "Sofía",
-            "surname": "Montes",
-            "lastname": "Herrea",
-            "nameCompany": "PEMEX",
-            "typeClient": "Externo",
+        validationSchema: yup.object().shape({
+            name: yup.string().required("Campo obligatorio"),
+            surname: yup.string().required("Campo obligatorio"),
+            secondSurname: yup.string().required("Campo obligatorio"),
+            company: yup.string().required("Campo obligatorio"),
+            phoneClient: yup.string().required("Campo obligatorio"),
+            emailClient: yup.string().required("Campo obligatorio"),
+            typeClient: yup.number().required("Campo obligatorio"),
+            nameRepre: yup.string().required("Campo obligatorio"),
+            surnameRepre: yup.string().required("Campo obligatorio"),
+            secondSurnameRepre: yup.string().required("Campo obligatorio"),
+            phoneRepre: yup.string().required("Campo obligatorio"),
+            emailRepre: yup.string().required("Campo obligatorio"),
+            extension: yup.string().required("Campo obligatorio")
+
+        }),
+        onSubmit: (values) => {
+            const cliente = {
+                ...values,
+                typeClient: {
+                    id: parseInt(values.typeClient)
+                },
+            };
+            console.log(cliente);
+            Alert.fire({
+                title: titleConfirmacion,
+                text: msjConfirmacion,
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#198754",
+                cancelButtonColor: "#dc3545",
+                showCancelButton: true,
+                reverseButtons: true,
+                showLoaderOnConfirm: true,
+                icon: "warning",
+                preConfirm: () => {
+                    return axios({ url: "/client/", method: "POST", data: JSON.stringify(cliente) })
+                        .then((response) => {
+                            console.log(response);
+                            if (!response.error) {
+                                getClients();
+                                Alert.fire({
+                                    title: titleExito,
+                                    text: msjExito,
+                                    confirmButtonColor: "#198754",
+                                    icon: "success",
+                                    confirmButtonText: "Aceptar",
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        handleCloseForm();
+                                    }
+                                });
+                            }
+                            return response;
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            Alert.fire({
+                                title: titleError,
+                                text: msjError,
+                                cancelButtonColor: "#198754",
+                                icon: "error",
+                                confirmButtonText: "Aceptar",
+                            });
+                        });
+                },
+                backdrop: true,
+                allowOutsideClick: !Alert.isLoading,
+            });
         },
-        {
-            "name": "Josué",
-            "surname": "Escobar",
-            "lastname": "Tenorio",
-            "nameCompany": "PEMEX",
-            "typeClient": "Externo",
-        },
-        {
-            "name": "Ximena",
-            "surname": "Rodriguez",
-            "lastname": "Padilla",
-            "nameCompany": "PEMEX",
-            "typeClient": "Interno",
-        }
-    ];
+    });
 
     const columns = [
         {
-            name: <h6 width="20%">#</h6>,
+            name: <h6>#</h6>,
             cell: (row, index) => <div><h6>{index + 1}</h6></div>,
+            width: "5%"
         },
         {
-            name: <h6 className="text-center">Nombre del cliente</h6>,
-            cell: (row) => <div className="txt4">{row.name + " "} {row.surname + " "} {row.lastname}</div>,
+            name: <h6>Nombre del cliente</h6>,
+            cell: (row) => <div className="txt4">{row.name + " "} {row.surname + " "} {row.secondSurname}</div>,
+            width: "30%"
         },
         {
-            name: <h6 className="text-center">Tipo de cliente</h6>,
-            cell: (row) => <div className="txt4">{row.typeClient}</div>,
+            name: <h6>Tipo de cliente</h6>,
+            cell: (row) => <div className="txt4">{row.typeClient.description}</div>,
+        },
+        {
+            name: <h6>Empresa</h6>,
+            cell: (row) => <div className="txt4">{row.company}</div>,
         },
         {
             name: <div><h6>Detalles</h6></div>,
             cell: (row) => <div>
                 <Button variant="primary" size="md"
                     onClick={() => {
-                        setValues(row)
+                        // setValues(row)
+                        setValues({
+                            ...row,
+                            "typeClient": row.typeClient.description
+                        })
                         setIsOpenDetails(true)
                     }}>
                     <FeatherIcon icon="info" />
@@ -97,7 +179,11 @@ export const ClientList = () => {
             cell: (row) => <div>
                 <Button variant="warning" size="md"
                     onClick={() => {
-                        setValues(row)
+                        // setValues(row)
+                        setValues({
+                            ...row,
+                            "typeClient": row.typeClient.id
+                        })
                         setIsOpenUpdate(true)
                     }}>
                     <FeatherIcon icon="edit" />
@@ -105,11 +191,6 @@ export const ClientList = () => {
             </div>
         },
     ];
-
-    const getClients = () => {
-        setClients(client);
-        setIsLoading(false);
-    };
 
     const paginationOptions = {
         rowsPerPageText: "Filas por página",
@@ -124,7 +205,6 @@ export const ClientList = () => {
         }
         return <FilterComponent filterText={filterText} onFilter={e => setFilterText(e.target.value)} onSearch={search} />
     }, [filterText]);
-
 
     return (
         <div className="content-wrapper screenHeight">
@@ -162,132 +242,184 @@ export const ClientList = () => {
                             <Collapse in={isOpen}>
                                 <div id="example-collapse-text">
                                     <Container fluid>
-                                        <Card.Body>
-                                            {/* DATOS DEL CLIENTE */}
-                                            <Card className="mb-3" bg="white">
-                                                <Card.Header onClick={() => setIsOpenData(!isOpenData)}
-                                                    aria-controls="example-collapse-text"
-                                                    aria-expanded={isOpenData}
-                                                    type="button">
-                                                    <Row>
-                                                        <Col as="h6" className="text-bold">Datos del cliente</Col>
-                                                        <Col className="text-end">
-                                                            <Col>
-                                                                {isOpenData ? (
-                                                                    <FeatherIcon icon="minus"
-                                                                        color="grey" />
-                                                                ) : (
-                                                                    <FeatherIcon icon="plus"
-                                                                        color="grey" />
-                                                                )}
+                                        <Form className="row" onSubmit={formik.handleSubmit}>
+                                            <Card.Body>
+                                                {/* DATOS DEL CLIENTE */}
+                                                <Card className="mb-3" bg="white">
+                                                    <Card.Header onClick={() => setIsOpenData(!isOpenData)}
+                                                        aria-controls="example-collapse-text"
+                                                        aria-expanded={isOpenData}
+                                                        type="button">
+                                                        <Row>
+                                                            <Col as="h6" className="text-bold">Datos del cliente</Col>
+                                                            <Col className="text-end">
+                                                                <Col>
+                                                                    {isOpenData ? (
+                                                                        <FeatherIcon icon="minus"
+                                                                            color="grey" />
+                                                                    ) : (
+                                                                        <FeatherIcon icon="plus"
+                                                                            color="grey" />
+                                                                    )}
+                                                                </Col>
                                                             </Col>
-                                                        </Col>
-                                                    </Row>
-                                                </Card.Header>
-                                                <Collapse in={isOpenData}>
-                                                    <div id="example-collapse-text">
-                                                        <Card.Body>
-                                                            <Form className="row">
-                                                                <Form.Group className="col-md-4" >
-                                                                    <Form.Label>Nombre</Form.Label>
-                                                                    <Form.Control type="text" placeholder="Ejemplo: María" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-4" >
-                                                                    <Form.Label>Primer apellido</Form.Label>
-                                                                    <Form.Control type="text" placeholder="Ejemplo: Valdez" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-4" >
-                                                                    <Form.Label>Segundo apellido</Form.Label>
-                                                                    <Form.Control type="text" placeholder="Ejemplo: Díaz" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-6 mb-4" >
-                                                                    <Form.Label>Nombre de la empresa</Form.Label>
-                                                                    <Form.Control type="text" placeholder="Ejemplo: NISSAN" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-6 mb-4" >
-                                                                    <Form.Label>Teléfono</Form.Label>
-                                                                    <Form.Control type="tel" placeholder="Ejemplo: Díaz" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-6 mb-4" >
-                                                                    <Form.Label>Correo eléctronico</Form.Label>
-                                                                    <Form.Control type="email" placeholder="Email" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-6 mb-4" >
-                                                                    <Form.Label>Tipo de cliente</Form.Label>
-                                                                    <Form.Select aria-label="Default select example">
-                                                                        <option>Seleccione una opción</option>
-                                                                        <option value="1">Interno</option>
-                                                                        <option value="2">Externo</option>
-                                                                    </Form.Select>
-                                                                </Form.Group>
-                                                            </Form>
-                                                        </Card.Body>
-                                                    </div>
-                                                </Collapse>
-                                            </Card>
-                                            {/* DATOS DEL REPRESENTANTE DEL CLIENTE CLIENTE */}
-                                            <Card className="mb-3" bg="white">
-                                                <Card.Header onClick={() => setIsOpenClient(!isOpenClient)}
-                                                    aria-controls="example-collapse-text"
-                                                    aria-expanded={isOpenClient}
-                                                    type="button">
-                                                    <Row>
-                                                        <Col as="h6" className="text-bold">Datos del representante del cliente</Col>
-                                                        <Col className="text-end">
-                                                            <Col>
-                                                                {isOpenClient ? (
-                                                                    <FeatherIcon icon="minus" color="grey" />
-                                                                ) : (
-                                                                    <FeatherIcon icon="plus" color="grey" />
-                                                                )}
-                                                            </Col>
-                                                        </Col>
-                                                    </Row>
-                                                </Card.Header>
-                                                <Collapse in={isOpenClient}>
-                                                    <div id="example-collapse-text">
-                                                        <Card.Body>
-                                                            <Form className="row">
-                                                                <Form.Group className="col-md-4" >
-                                                                    <Form.Label>Nombre</Form.Label>
-                                                                    <Form.Control type="text" placeholder="Ejemplo: María" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-4" >
-                                                                    <Form.Label>Primer apellido</Form.Label>
-                                                                    <Form.Control type="text" placeholder="Ejemplo: Valdez" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-4" >
-                                                                    <Form.Label>Segundo apellido</Form.Label>
-                                                                    <Form.Control type="text" placeholder="Ejemplo: Díaz" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-6 mb-4" >
-                                                                    <Form.Label>Teléfono</Form.Label>
-                                                                    <Form.Control type="tel" placeholder="Ejemplo: Díaz" />
-                                                                </Form.Group>
-                                                                <Form.Group className="col-md-6 mb-4" >
-                                                                    <Form.Label>Correo eléctronico</Form.Label>
-                                                                    <Form.Control type="email" placeholder="Email" />
-                                                                </Form.Group>
-                                                            </Form>
-                                                        </Card.Body>
-                                                    </div>
-                                                </Collapse>
-                                            </Card>
+                                                        </Row>
+                                                    </Card.Header>
+                                                    <Collapse in={isOpenData}>
+                                                        <div id="example-collapse-text">
+                                                            <Card.Body>
+                                                                {/* <Form className="row" onSubmit={formik.handleSubmit}> */}
+                                                                <div className="row">
+                                                                    <Form.Group className="col-md-4 mb-4" >
+                                                                        <Form.Label>Nombre</Form.Label>
+                                                                        <Form.Control name="name" value={formik.values.name} onChange={formik.handleChange} type="text" placeholder="Ejemplo: María" />
+                                                                        {formik.errors.name ? (
+                                                                            <span className="text-danger">{formik.errors.name}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-4 mb-4">
+                                                                        <Form.Label>Primer apellido</Form.Label>
+                                                                        <Form.Control name="surname" value={formik.values.surname} onChange={formik.handleChange} type="text" placeholder="Ejemplo: Valdez" />
+                                                                        {formik.errors.surname ? (
+                                                                            <span className="text-danger">{formik.errors.surname}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-4 mb-4" >
+                                                                        <Form.Label>Segundo apellido</Form.Label>
+                                                                        <Form.Control name="secondSurname" value={formik.values.secondSurname} onChange={formik.handleChange} type="text" placeholder="Ejemplo: Díaz" />
+                                                                        {formik.errors.secondSurname ? (
+                                                                            <span className="text-danger">{formik.errors.secondSurname}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-6 mb-4" >
+                                                                        <Form.Label>Nombre de la empresa</Form.Label>
+                                                                        <Form.Control name="company" value={formik.values.company} onChange={formik.handleChange} type="text" placeholder="Ejemplo: NISSAN" />
+                                                                        {formik.errors.company ? (
+                                                                            <span className="text-danger">{formik.errors.company}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-4 mb-4" >
+                                                                        <Form.Label>Teléfono</Form.Label>
+                                                                        <Form.Control name="phoneClient" value={formik.values.phoneClient} onChange={formik.handleChange} type="tel" placeholder="7771265498" />
+                                                                        {formik.errors.phoneClient ? (
+                                                                            <span className="text-danger">{formik.errors.phoneClient}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-2 mb-4" >
+                                                                        <Form.Label>Extensión</Form.Label>
+                                                                        <Form.Control name="extension" value={formik.values.extension} onChange={formik.handleChange} type="tel" />
+                                                                        {formik.errors.extension ? (
+                                                                            <span className="text-danger">{formik.errors.extension}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-6 mb-4" >
+                                                                        <Form.Label>Correo eléctronico</Form.Label>
+                                                                        <Form.Control name="emailClient" value={formik.values.emailClient} onChange={formik.handleChange} type="email" placeholder="Email" />
+                                                                        {formik.errors.emailClient ? (
+                                                                            <span className="text-danger">{formik.errors.emailClient}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-6 mb-4" >
+                                                                        <Form.Label>Tipo de cliente</Form.Label>
+                                                                        <Form.Select aria-label="Seleccionar tipo de cliente" name="typeClient"
+                                                                            value={formik.values.typeClient}
+                                                                            onChange={formik.handleChange}>
+                                                                            <option value="">Seleccione una opción</option>
+                                                                            <option value="2">Interno</option>
+                                                                            <option value="1">Externo</option>
+                                                                        </Form.Select>
+                                                                        {formik.errors.typeClient ? (
+                                                                            <span className='text-danger'>{formik.errors.typeClient}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                </div>
 
-                                            <div className="d-grid gap-2">
-                                                <Button type="submit" style={{ background: "#042B61", borderColor: "#042B61" }} >
-                                                    Registrar
-                                                </Button>
-                                                {/* <Button type="submit" className="button-style" size="lg">Registrar</Button> */}
-                                            </div>
-                                        </Card.Body>
+                                                                {/* </Form> */}
+                                                            </Card.Body>
+                                                        </div>
+                                                    </Collapse>
+                                                </Card>
+                                                {/* DATOS DEL REPRESENTANTE DEL CLIENTE CLIENTE */}
+                                                <Card className="mb-3" bg="white">
+                                                    <Card.Header onClick={() => setIsOpenClient(!isOpenClient)}
+                                                        aria-controls="example-collapse-text"
+                                                        aria-expanded={isOpenClient}
+                                                        type="button">
+                                                        <Row>
+                                                            <Col as="h6" className="text-bold">Datos del representante del cliente</Col>
+                                                            <Col className="text-end">
+                                                                <Col>
+                                                                    {isOpenClient ? (
+                                                                        <FeatherIcon icon="minus" color="grey" />
+                                                                    ) : (
+                                                                        <FeatherIcon icon="plus" color="grey" />
+                                                                    )}
+                                                                </Col>
+                                                            </Col>
+                                                        </Row>
+                                                    </Card.Header>
+                                                    <Collapse in={isOpenClient}>
+                                                        <div id="example-collapse-text">
+                                                            <Card.Body>
+                                                                {/* <Form className="row"> */}
+                                                                <div className="row">
+                                                                    <Form.Group className="col-md-4" >
+                                                                        <Form.Label>Nombre</Form.Label>
+                                                                        <Form.Control name="nameRepre" value={formik.values.nameRepre} onChange={formik.handleChange} type="text" placeholder="Ejemplo: María" />
+                                                                        {formik.errors.nameRepre ? (
+                                                                            <span className="text-danger">{formik.errors.nameRepre}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-4" >
+                                                                        <Form.Label>Primer apellido</Form.Label>
+                                                                        <Form.Control name="surnameRepre" value={formik.values.surnameRepre} onChange={formik.handleChange} type="text" placeholder="Ejemplo: Valdez" />
+                                                                        {formik.errors.surnameRepre ? (
+                                                                            <span className="text-danger">{formik.errors.surnameRepre}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-4" >
+                                                                        <Form.Label>Segundo apellido</Form.Label>
+                                                                        <Form.Control name="secondSurnameRepre" value={formik.values.secondSurnameRepre} onChange={formik.handleChange} type="text" placeholder="Ejemplo: Díaz" />
+                                                                        {formik.errors.secondSurnameRepre ? (
+                                                                            <span className="text-danger">{formik.errors.secondSurnameRepre}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-6 mb-4" >
+                                                                        <Form.Label>Teléfono</Form.Label>
+                                                                        <Form.Control name="phoneRepre" value={formik.values.phoneRepre} onChange={formik.handleChange} type="tel" placeholder="Ejemplo: Díaz" />
+                                                                        {formik.errors.phoneRepre ? (
+                                                                            <span className="text-danger">{formik.errors.phoneRepre}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                    <Form.Group className="col-md-6 mb-4" >
+                                                                        <Form.Label>Correo eléctronico</Form.Label>
+                                                                        <Form.Control name="emailRepre" value={formik.values.emailRepre} onChange={formik.handleChange} type="email" placeholder="Email" />
+                                                                        {formik.errors.emailRepre ? (
+                                                                            <span className="text-danger">{formik.errors.emailRepre}</span>
+                                                                        ) : null}
+                                                                    </Form.Group>
+                                                                </div>
+
+                                                                {/* </Form> */}
+                                                            </Card.Body>
+                                                        </div>
+                                                    </Collapse>
+                                                </Card>
+                                                <div className="d-grid gap-2">
+                                                    <Button type="submit" style={{ background: "#042B61", borderColor: "#042B61" }} 
+                                                    disabled={!(formik.isValid && formik.dirty)} >
+                                                        Registrar
+                                                    </Button>
+                                                    {/* <Button type="submit" className="button-style" size="lg">Registrar</Button> */}
+                                                </div>
+                                            </Card.Body>
+                                        </Form>
                                     </Container>
                                 </div>
                             </Collapse>
                         </Card>
                     </Col>
                 </Row>
-
                 <Row className="mt-3">
                     <Col>
                         <Card>
@@ -300,7 +432,8 @@ export const ClientList = () => {
                             <Card.Body>
                                 <DataTable
                                     columns={columns}
-                                    data={clients}
+                                    data={filteredItems}
+                                    noDataComponent="No hay registros"
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     progressPending={isLoading}
@@ -310,14 +443,13 @@ export const ClientList = () => {
                                 />
                                 <ClientEdit
                                     isOpenUpdate={isOpenUpdate}
-                                    handleClose={() => setIsOpenUpdate(false)}
-                                    setClients={setClients}
+                                    handleClose={setIsOpenUpdate}
+                                    getClients={getClients}
                                     {...values}
                                 />
                                 <ClientDetails
                                     isOpenDetails={isOpenDetails}
-                                    handleClose={() => setIsOpenDetails(false)}
-                                    setClients={setClients}
+                                    handleClose={setIsOpenDetails}
                                     {...values}
                                 />
                             </Card.Body>

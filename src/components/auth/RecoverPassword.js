@@ -18,7 +18,7 @@ export const RecoverPassword = () => {
 
     return (
         <header className="App-header">
-            <Container class="py-5 h-100">
+            <Container className="py-5 h-100">
                 <Row className='d-flex justify-content-center align-items-center h-100'>
                     <Card style={{ width: "22rem"}}>
                         <div className='text-center'>

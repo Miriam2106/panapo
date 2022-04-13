@@ -53,7 +53,7 @@ export const DirectionDetails = ({
         </Modal.Header>
         <Modal.Body>
           <Form className="row">
-            <Form.Group className="col-md-6 mb-4">
+            <Form.Group className="col-md-4 mb-4">
               <Form.Label className="form-label">Nombre</Form.Label>
               <Form.Control
                 name="name"
@@ -62,7 +62,7 @@ export const DirectionDetails = ({
                 readOnly
               />
             </Form.Group>
-            <Form.Group className="col-md-6 mb-4">
+            <Form.Group className="col-md-4 mb-4">
               <Form.Label className="form-label">Primer apellido</Form.Label>
               <Form.Control
                 name="surname"
@@ -71,7 +71,7 @@ export const DirectionDetails = ({
                 readOnly
               />
             </Form.Group>
-            <Form.Group className="col-md-6 mb-4">
+            <Form.Group className="col-md-4 mb-4">
               <Form.Label className="form-label">Segundo apellido</Form.Label>
               <Form.Control
                 name="secondSurname"

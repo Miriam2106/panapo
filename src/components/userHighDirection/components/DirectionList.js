@@ -42,6 +42,7 @@ export const DirectionList = () => {
                 let data = response.data;
                 let directivesTemp = data.filter(item => item.person.profession.description === "Directivo")
                 setDirectives(directivesTemp);
+                console.log(directivesTemp)
                 setIsLoading(false);
             })
             .catch((error) => {
@@ -50,7 +51,6 @@ export const DirectionList = () => {
     };
 
     const onDelete = (idDelete) =>{
-        console.log(idDelete)
         Alert.fire({
             title: titleConfirmacion,
             text: msjConfirmacion,

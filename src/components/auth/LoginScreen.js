@@ -149,7 +149,7 @@ export const LoginScreen = (props) => {
                       </span>
                     ) : null}
                   </FormGroup>
-                  <Form.Group className="form-outline mb-4">
+                  <Form.Group className="form-outline mb-4 mt-3">
                     <Col className="d-grid gap-2 text-center pt-1 pb-1">
                       <Button
                         style={{

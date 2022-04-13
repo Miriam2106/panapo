@@ -229,6 +229,7 @@ export const DirectionEdit = ({
               <Form.Label className="form-label">Contraseña</Form.Label>
               <Form.Control
                 name="password"
+                type="password"
                 placeholder="********"
                 value={formikModify.values.password}
                 onChange={formikModify.handleChange}
@@ -238,6 +239,7 @@ export const DirectionEdit = ({
               <Form.Label className="form-label">Confirmar contraseña</Form.Label>
               <Form.Control
                 name="confirmPassword"
+                type="password"
                 placeholder="********"
                 value={formikModify.values.confirmPassword}
                 onChange={formikModify.handleChange}
