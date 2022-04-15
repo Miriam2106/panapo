@@ -77,18 +77,20 @@ export const DashboardScreen = () => {
     {
       name: <h6>#</h6>,
       cell: (row, index) => <div><h6>{index + 1}</h6></div>,
-      width:"4%",
+      width:"6%",
       
     },
     {
-      name: <h6 className="text-center">Acrónimo</h6>,
-      cell: (row) => <div className="txt4">{row.name}</div>,
-      width:"8%"
+      name: <h6>Acrónimo</h6>,
+      cell: (row) => <div className="txt4 text-center">{row.name}</div>,
+      width:"15%",
+      center: true,
     },
     {
-      name: <h6 className="text-center">Nombre del proyecto</h6>,
+      name: <h6>Nombre del proyecto</h6>,
       cell: (row) => <div className="txt4 text-center">{row.nameComplete}</div>,
-      width:"20%"
+      width:"25%",
+      center: true,
     },
     {
       name: <h6 >Avance real del proyecto</h6>,
@@ -96,11 +98,12 @@ export const DashboardScreen = () => {
         <ProgressBar now={row.progress} variant="success" />
         <small>{row.progress}% completado</small>
       </div>,
+      width:"25%"
     },
     {
       name: <h6 title="Si hay números negativos es porque van adelantados en el proyecto">Días de desviación</h6>,
       cell: (row) =>
-        <>
+        <div className='text-center'>
           {
             row.daysD <= 5 ? (
               <h6>
@@ -127,7 +130,8 @@ export const DashboardScreen = () => {
               )
             )
           }
-        </>
+        </div>,
+        width:"15%",
     },
     {
       name: <h6>Prioridad</h6>,

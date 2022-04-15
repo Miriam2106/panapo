@@ -31,7 +31,7 @@ export const LoginScreen = (props) => {
       password: "",
     },
     validationSchema: yup.object().shape({
-      username: yup.string().required("Campo obligatorio"),
+      username: yup.string().email("Ingresa un correo válido").required("Campo obligatorio"),
       password: yup
         .string()
         .required("Campo obligatorio")
@@ -45,7 +45,8 @@ export const LoginScreen = (props) => {
       })
         .then((response) => {
           if (!response.error) {
-            authContext.signIn(response.data.token, response.data.user.username)
+            console.log(response.data)
+            authContext.signIn(response.data.token, response.data.user.username, response.data.user)
 
             //asignar los roles
             let authorities = response.data.user.authorities;

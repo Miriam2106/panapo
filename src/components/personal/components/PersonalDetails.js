@@ -86,7 +86,7 @@ export const PersonalDetails = ({
                             />
                         </Form.Group>
                         <Form.Group className="col-md-6 mb-4">
-                            <Form.Label className="form-label">Correo</Form.Label>
+                            <Form.Label className="form-label">Correo electrónico</Form.Label>
                             <Form.Control
                                 name="email"
                                 value={values.email}

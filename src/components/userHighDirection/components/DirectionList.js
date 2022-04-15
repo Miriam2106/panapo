@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import FeatherIcon from "feather-icons-react";
-import { useNavigate } from "react-router-dom";
 import {
     Button,
     Card,
@@ -53,11 +52,10 @@ export const DirectionList = () => {
     const onDelete = (idDelete) =>{
         Alert.fire({
             title: titleConfirmacion,
-            text: msjConfirmacion,
-            confirmButtonText: "Aceptar",
+            confirmButtonText: "Eliminar",
             cancelButtonText: "Cancelar",
-            confirmButtonColor: "#198754",
-            cancelButtonColor: "#dc3545",
+            confirmButtonColor: "#dc3545",
+            cancelButtonColor: "grey",
             showCancelButton: true,
             reverseButtons: true,
             showLoaderOnConfirm: true,
@@ -68,8 +66,7 @@ export const DirectionList = () => {
                         if (!response.error) {
                             getDirectives();
                             Alert.fire({
-                                title: titleExito,
-                                text: msjExito,
+                                title: "Directivo eliminado correctamente",
                                 confirmButtonColor: "#198754",
                                 icon: "success",
                                 confirmButtonText: "Aceptar",
@@ -107,7 +104,7 @@ export const DirectionList = () => {
             name: yup.string().required("Campo obligatorio"),
             surname: yup.string().required("Campo obligatorio"),
             secondSurname: yup.string().required("Campo obligatorio"),
-            email: yup.string().email("Ingresa un correo correcto").required("Campo obligatorio"),
+            email: yup.string().email("Ingresa un correo válido").required("Campo obligatorio"),
         }),
         onSubmit: (values) => {
             const person = {
@@ -155,8 +152,7 @@ export const DirectionList = () => {
                             if (!response.error) {
                                 getDirectives();
                                 Alert.fire({
-                                    title: titleExito,
-                                    text: msjExito,
+                                    title: "Directivo registrado correctamente",
                                     confirmButtonColor: "#198754",
                                     icon: "success",
                                     confirmButtonText: "Aceptar",
@@ -201,7 +197,7 @@ export const DirectionList = () => {
             width: "5%"
         },
         {
-            name: <h6>Nombre del directivo</h6>,
+            name: <h6>Nombre completo</h6>,
             cell: (row) => <div className="txt4">{row.person.name + " "}{row.person.surname + " "}{row.person.secondSurname}</div>,
             width: "40%"
         },
@@ -311,7 +307,7 @@ export const DirectionList = () => {
                                 type="button"
                             >
                                 <Row>
-                                    <Col as="h6">Registrar</Col>
+                                    <Col as="h6">Registrar directivo</Col>
                                     <Col className="text-end">
                                         <Col>
                                             {isOpen ? (
@@ -329,7 +325,7 @@ export const DirectionList = () => {
                                         <Form className="row" onSubmit={formik.handleSubmit}>
                                             <Form.Group className="col-md-4 mt-3">
                                                 <Form.Label>Nombre(s)</Form.Label>
-                                                <Form.Control type="text" placeholder="Emmanuel" name="name" value={formik.values.name}
+                                                <Form.Control type="text" placeholder="Ejemplo: Emmanuel" name="name" value={formik.values.name}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.name ? (
                                                     <span className='text-danger'>{formik.errors.name}</span>
@@ -337,7 +333,7 @@ export const DirectionList = () => {
                                             </Form.Group>
                                             <Form.Group className="col-md-4 mt-3">
                                                 <Form.Label>Primer apellido</Form.Label>
-                                                <Form.Control type="text" placeholder="Herrera" name="surname" value={formik.values.surname}
+                                                <Form.Control type="text" placeholder="Ejemplo: Herrera" name="surname" value={formik.values.surname}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.surname ? (
                                                     <span className='text-danger'>{formik.errors.surname}</span>
@@ -345,7 +341,7 @@ export const DirectionList = () => {
                                             </Form.Group>
                                             <Form.Group className="col-md-4 mt-3">
                                                 <Form.Label>Segundo apellido</Form.Label>
-                                                <Form.Control type="text" placeholder="Ibarra" name="secondSurname" value={formik.values.secondSurname}
+                                                <Form.Control type="text" placeholder="Ejemplo: Ibarra" name="secondSurname" value={formik.values.secondSurname}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.secondSurname ? (
                                                     <span className='text-danger'>{formik.errors.secondSurname}</span>
@@ -355,7 +351,7 @@ export const DirectionList = () => {
                                                 <Form.Label>Correo electrónico</Form.Label>
                                                 <Form.Control
                                                     type="email"
-                                                    placeholder="utez@utez.edu.mx" name="email" value={formik.values.email}
+                                                    placeholder="Ejemplo: utez@utez.edu.mx" name="email" value={formik.values.email}
                                                     onChange={formik.handleChange} />
                                                 {formik.errors.email ? (
                                                     <span className='text-danger'>{formik.errors.email}</span>
@@ -384,7 +380,7 @@ export const DirectionList = () => {
                         <Card>
                             <Card.Header className="backgroundHeadCard">
                                 <Row>
-                                    <Col as="h6">Directivos</Col>
+                                    <Col as="h6">Directivos registrados</Col>
                                 </Row>
                             </Card.Header>
                             <Card.Body>

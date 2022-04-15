@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import FeatherIcon from "feather-icons-react";
-// import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../../shared/plugins/alert";
-// import axios from "../../../../shared/plugins/axios";
-
 
 export const ClientDetails = ({
   isOpenDetails,
@@ -67,7 +63,7 @@ export const ClientDetails = ({
         <Modal.Body>
           <Form className="row">
             <Form.Group className="col-md-4 mb-4">
-              <Form.Label className="form-label font-weight-normal">Nombre</Form.Label>
+              <Form.Label className="font-weight-normal">Nombre</Form.Label>
               <Form.Control
                 name="name"
                 value={values.name}
@@ -76,7 +72,7 @@ export const ClientDetails = ({
               />
             </Form.Group>
             <Form.Group className="col-md-4 mb-4">
-              <Form.Label className="form-label">Primer apellido</Form.Label>
+              <Form.Label className="font-weight-normal">Primer apellido</Form.Label>
               <Form.Control
                 name="surname"
                 value={values.surname}
@@ -94,10 +90,10 @@ export const ClientDetails = ({
               />
             </Form.Group>
             <Form.Group className="col-md-6 mb-4">
-              <Form.Label className="form-label">Empresa</Form.Label>
+              <Form.Label className="form-label">Correo electrónico</Form.Label>
               <Form.Control
-                name="company"
-                value={values.company}
+                name="emailClient"
+                value={values.emailClient}
                 onChange={handleChange}
                 readOnly
               />
@@ -121,10 +117,10 @@ export const ClientDetails = ({
               />
             </Form.Group>
             <Form.Group className="col-md-6 mb-4">
-              <Form.Label className="form-label">Correo electrónico</Form.Label>
+              <Form.Label className="form-label">Empresa</Form.Label>
               <Form.Control
-                name="emailClient"
-                value={values.emailClient}
+                name="company"
+                value={values.company}
                 onChange={handleChange}
                 readOnly
               />

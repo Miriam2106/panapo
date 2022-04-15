@@ -46,7 +46,7 @@ export const PersonalEdit = ({
             dateBirth: "",
             phone: "",
             email: "",
-            profession: 1,
+            profession: "",
         },
         validationSchema: yup.object().shape({
             name: yup.string().required("Campo obligatorio"),
@@ -148,7 +148,7 @@ export const PersonalEdit = ({
                     className="backgroundHeadModal"
                     closeVariant="white"
                 >
-                    <Modal.Title>Modificar datos del personal</Modal.Title>
+                    <Modal.Title>Modificar personal</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form className="row" onSubmit={formikModify.handleSubmit}>

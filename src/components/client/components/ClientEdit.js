@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import FeatherIcon from "feather-icons-react";
 import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../shared/plugins/alert";
 import * as yup from "yup";
 import axios from "../../../shared/plugins/axios";
@@ -166,12 +165,12 @@ export const ClientEdit = ({
         <>
             <Modal show={isOpenUpdate} onHide={handleCloseForm} size="lg">
                 <Modal.Header closeButton className="backgroundHeadModal" closeVariant="white">
-                    <Modal.Title>Modificar datos del cliente</Modal.Title>
+                    <Modal.Title>Modificar cliente</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form className="row" onSubmit={formikModify.handleSubmit}>
                         <Form.Group className="col-md-6 mb-4">
-                            <Form.Label>Correo eléctronico</Form.Label>
+                            <Form.Label>Correo electrónico</Form.Label>
                             <Form.Control name="emailClient" type="email" placeholder="Email"
                                 value={formikModify.values.emailClient} onChange={formikModify.handleChange} />
                             {formikModify.errors.emailClient ? (
@@ -230,7 +229,7 @@ export const ClientEdit = ({
                             ) : null}
                         </Form.Group>
                         <Form.Group className="col-md-6 mb-4">
-                            <Form.Label>Correo eléctronico</Form.Label>
+                            <Form.Label>Correo electrónico</Form.Label>
                             <Form.Control name="emailRepre" type="email" placeholder="Email"
                                 value={formikModify.values.emailRepre} onChange={formikModify.handleChange} />
                             {formikModify.errors.emailRepre ? (

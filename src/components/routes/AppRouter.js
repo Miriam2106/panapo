@@ -10,6 +10,7 @@ import { DashboardScreen } from '../home/DashboardScreen'
 import { ProjectScreen } from "../project/coordinador/ProjectScreen"
 import { ProjectScreenRd } from "../project/rd/ProjectScreenRd"
 import { ProjectScreenRape } from "../project/rape/ProjectScreenRape"
+import { ChangeRol } from "../home/ChangeRol";
 
 import { RoleScreen } from "../role/RoleScreen"
 import { ReportScreen } from "../report/ReportScreen";
@@ -50,6 +51,7 @@ export const AppRouter = () => {
                           <Route path={"/client"} element={<ClientScreen />} />
                           <Route path={"/role"} element={<RoleScreen />} />
                           <Route path={"/report"} element={<ReportScreen />} />
+                          <Route path={"/changerol"} element={<ChangeRol />} />
                           <Route path="*" element={<div>ERROR 404</div>} />
                         </Routes>
                       </Container>
@@ -67,6 +69,7 @@ export const AppRouter = () => {
                         <Route path={"/"} element={<DashboardScreen />} />
                         <Route path={"/project"} element={<ProjectScreenRd />} />
                         <Route path={"/report"} element={<ReportScreen />} />
+                        <Route path={"/changerol"} element={<ChangeRol />} />
                         <Route path="*" element={<div>ERROR 404</div>} />
                       </Routes>
                     </Container>
@@ -84,6 +87,7 @@ export const AppRouter = () => {
                         <Route path={"/"} element={<DashboardScreen />} />
                         <Route path={"/project"} element={<ProjectScreenRape />} />
                         <Route path={"/report"} element={<ReportScreen />} />
+                        <Route path={"/changerol"} element={<ChangeRol />} />
                         <Route path="*" element={<div>ERROR 404</div>} />
                       </Routes>
                     </Container>

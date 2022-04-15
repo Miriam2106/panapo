@@ -82,6 +82,14 @@ export const AppMenu = () => {
                   </p>
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link to={"/changerol"} className="nav-link">
+                  <i className="nav-icon far fa-calendar-alt"></i>
+                  <p>
+                    Mis roles
+                  </p>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>

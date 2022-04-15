@@ -12,7 +12,6 @@ import axios from "../../../shared/plugins/axios";
 import { useFormik } from "formik";
 import "../../../assets/css/main.css";
 
-
 export const ClientList = () => {
     const [clients, setClients] = useState([]);
     const [filterText, setFilterText] = useState("");
@@ -146,17 +145,17 @@ export const ClientList = () => {
             width: "5%"
         },
         {
-            name: <h6>Nombre del cliente</h6>,
+            name: <h6>Nombre completo</h6>,
             cell: (row) => <div className="txt4">{row.name + " "} {row.surname + " "} {row.secondSurname}</div>,
             width: "30%"
         },
         {
-            name: <h6>Tipo de cliente</h6>,
-            cell: (row) => <div className="txt4">{row.typeClient.description}</div>,
+            name: <h6>Nombre de la empresa</h6>,
+            cell: (row) => <div className="txt4">{row.company}</div>,
         },
         {
-            name: <h6>Empresa</h6>,
-            cell: (row) => <div className="txt4">{row.company}</div>,
+            name: <h6>Tipo de cliente</h6>,
+            cell: (row) => <div className="txt4">{row.typeClient.description}</div>,
         },
         {
             name: <div><h6>Detalles</h6></div>,
@@ -292,31 +291,31 @@ export const ClientList = () => {
                                                                         ) : null}
                                                                     </Form.Group>
                                                                     <Form.Group className="col-md-6 mb-4" >
-                                                                        <Form.Label>Nombre de la empresa</Form.Label>
-                                                                        <Form.Control name="company" value={formik.values.company} onChange={formik.handleChange} type="text" placeholder="Ejemplo: NISSAN" />
-                                                                        {formik.errors.company ? (
-                                                                            <span className="text-danger">{formik.errors.company}</span>
+                                                                        <Form.Label>Correo eléctronico</Form.Label>
+                                                                        <Form.Control name="emailClient" value={formik.values.emailClient} onChange={formik.handleChange} type="email" placeholder="Ejemplo: utez@utez.edu.mx" />
+                                                                        {formik.errors.emailClient ? (
+                                                                            <span className="text-danger">{formik.errors.emailClient}</span>
                                                                         ) : null}
                                                                     </Form.Group>
                                                                     <Form.Group className="col-md-4 mb-4" >
                                                                         <Form.Label>Teléfono</Form.Label>
-                                                                        <Form.Control name="phoneClient" value={formik.values.phoneClient} onChange={formik.handleChange} type="tel" placeholder="7771265498" />
+                                                                        <Form.Control name="phoneClient" value={formik.values.phoneClient} onChange={formik.handleChange} type="tel" placeholder="Ejemplo: 7771265498" />
                                                                         {formik.errors.phoneClient ? (
                                                                             <span className="text-danger">{formik.errors.phoneClient}</span>
                                                                         ) : null}
                                                                     </Form.Group>
                                                                     <Form.Group className="col-md-2 mb-4" >
                                                                         <Form.Label>Extensión</Form.Label>
-                                                                        <Form.Control name="extension" value={formik.values.extension} onChange={formik.handleChange} type="tel" />
+                                                                        <Form.Control name="extension" value={formik.values.extension} onChange={formik.handleChange} type="tel" placeholder="Ejemplo: 416"/>
                                                                         {formik.errors.extension ? (
                                                                             <span className="text-danger">{formik.errors.extension}</span>
                                                                         ) : null}
                                                                     </Form.Group>
                                                                     <Form.Group className="col-md-6 mb-4" >
-                                                                        <Form.Label>Correo eléctronico</Form.Label>
-                                                                        <Form.Control name="emailClient" value={formik.values.emailClient} onChange={formik.handleChange} type="email" placeholder="Email" />
-                                                                        {formik.errors.emailClient ? (
-                                                                            <span className="text-danger">{formik.errors.emailClient}</span>
+                                                                        <Form.Label>Nombre de la empresa</Form.Label>
+                                                                        <Form.Control name="company" value={formik.values.company} onChange={formik.handleChange} type="text" placeholder="Ejemplo: NISSAN" />
+                                                                        {formik.errors.company ? (
+                                                                            <span className="text-danger">{formik.errors.company}</span>
                                                                         ) : null}
                                                                     </Form.Group>
                                                                     <Form.Group className="col-md-6 mb-4" >
@@ -386,20 +385,19 @@ export const ClientList = () => {
                                                                     </Form.Group>
                                                                     <Form.Group className="col-md-6 mb-4" >
                                                                         <Form.Label>Teléfono</Form.Label>
-                                                                        <Form.Control name="phoneRepre" value={formik.values.phoneRepre} onChange={formik.handleChange} type="tel" placeholder="Ejemplo: Díaz" />
+                                                                        <Form.Control name="phoneRepre" value={formik.values.phoneRepre} onChange={formik.handleChange} type="tel" placeholder="Ejemplo: 7771144520" />
                                                                         {formik.errors.phoneRepre ? (
                                                                             <span className="text-danger">{formik.errors.phoneRepre}</span>
                                                                         ) : null}
                                                                     </Form.Group>
                                                                     <Form.Group className="col-md-6 mb-4" >
                                                                         <Form.Label>Correo eléctronico</Form.Label>
-                                                                        <Form.Control name="emailRepre" value={formik.values.emailRepre} onChange={formik.handleChange} type="email" placeholder="Email" />
+                                                                        <Form.Control name="emailRepre" value={formik.values.emailRepre} onChange={formik.handleChange} type="email" placeholder="Ejemplo: utez@utez.edu.mx" />
                                                                         {formik.errors.emailRepre ? (
                                                                             <span className="text-danger">{formik.errors.emailRepre}</span>
                                                                         ) : null}
                                                                     </Form.Group>
                                                                 </div>
-
                                                                 {/* </Form> */}
                                                             </Card.Body>
                                                         </div>
@@ -410,7 +408,6 @@ export const ClientList = () => {
                                                     disabled={!(formik.isValid && formik.dirty)} >
                                                         Registrar
                                                     </Button>
-                                                    {/* <Button type="submit" className="button-style" size="lg">Registrar</Button> */}
                                                 </div>
                                             </Card.Body>
                                         </Form>

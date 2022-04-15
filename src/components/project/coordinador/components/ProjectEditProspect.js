@@ -3,93 +3,204 @@ import { Button, Col, Form, Modal, Row, Card, Collapse } from "react-bootstrap";
 import FeatherIcon from "feather-icons-react";
 import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../../shared/plugins/alert";
 import axios from "../../../../shared/plugins/axios";
+import * as yup from "yup";
+import { useFormik } from "formik";
 
 export const ProjectEditProspect = ({
-  isOpenUpdate,
+  isOpenUpdateP,
   handleClose,
-  setProjectsProspect,
+  getProspectProject,
+  getProyectos,
+  id,
+  cotizacion,
+  description,
+  months,
   name,
+  numberBeca,
+  client,
+  project,
+  statusProject,
+  priceClient,
   status
 }) => {
 
+  const [values, setValues] = useState({
+    id: id,
+    cotizacion: cotizacion,
+    description: description,
+    months: months,
+    name: name,
+    numberBeca: numberBeca,
+    client: client,
+    project: project,
+    statusProject: statusProject,
+    priceClient: priceClient,
+    status: status
+  });
+
   const [isOpenData, setIsOpenData] = useState(false);
   const [isOpenClient, setIsOpenClient] = useState(false);
-  const [values, setValues] = useState({ name: name, status: status });
+  const [clients, setClients] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpenCotizacion, setIsOpenCotizacion] = useState(true);
 
-  // const handleChange = (event) =>{
-  //   const { name, value } = event.target;
-  //   setValues({ ...values, [name]: value});
-  // }  
+  const formikModify = useFormik({
+    initialValues: {
+      cotizacion: "",
+      description: "",
+      months: "",
+      name: "",
+      numberBeca: "",
+      client: "",
+      project: "",
+      priceClient: "",
+    },
+    validationSchema: yup.object().shape({
+      cotizacion: yup.number().required("Campo obligatorio"),
+      description: yup.string().required("Campo obligatorio"),
+      months: yup.number().required("Campo obligatorio"),
+      name: yup.string().required("Campo obligatorio"),
+      numberBeca: yup.number().required("Campo obligatorio"),
+      client: yup.string().required("Campo obligatorio"),
+      priceClient: yup.number().required("Campo obligatorio"),
+    }),
+    onSubmit: (valuesFormik) => {
+      let prospect = {
+        ...valuesFormik,
+      }
+      if (valuesFormik.project !== "") {
+        prospect = {
+          ...valuesFormik,
+          id: id,
+          client: {
+            id: parseInt(valuesFormik.client),
+          },
+          project: {
+            id: parseInt(valuesFormik.project),
+          }
+        };
+        console.log(prospect);
+      } else {
+        prospect = {
+          ...valuesFormik,
+          id: id,
+          client: {
+            id: parseInt(valuesFormik.client),
+          },
+          project: null
+        };
+        console.log(prospect);
+      }
+      return axios({
+        url: "/project/",
+        method: "PUT",
+        data: JSON.stringify(prospect),
+      })
+        .then((response) => {
+          console.log(response);
+          console.log("Si")
+          if (!response.error) {
+            getProspectProject();
+            getProyectos();
+            Alert.fire({
+              title: titleExito,
+              text: msjExito,
+              icon: "success",
+              confirmButtonText: "Aceptar",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                handleCloseForm();
+              }
+            });
+          }
+          return response;
+        })
+        .catch((error) => {
+          console.log(error)
+          console.log("No")
+          Alert.fire({
+            title: titleError,
+            confirmButtonColor: "#198754",
+            text: msjError,
+            icon: "error",
+            confirmButtonText: "Aceptar",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              handleCloseForm();
+            }
+          });
+        });
+    },
+  });
 
-  // const handleSubmit = (event) =>{
-  //   event.preventDefault();
-  //   console.log(values);
-  //   Alert.fire({
-  //   title: titleConfirmacion,
-  //   text: msjConfirmacion,
-  //   confirmButtonText: "Aceptar",
-  //   cancelButtonText: "Cancelar",
-  //   showCancelButton: true,
-  //   reverseButtons: true,
-  //   showLoaderOnConfirm: true,
-  //   icon: "warning",
-  //   preConfirm: () => {
-  //     return axios({
-  //       url: "/category/",
-  //       method: "PUT",
-  //       data: JSON.stringify(values),
-  //     })
-  //       .then((response) => {
-  //         console.log(response);
-  //         if (!response.error) {
-  //           setCategories((categories) => [
-  //             ...categories.filter((it) => it.id !== values.id),
-  //             values,
-  //           ]);
-  //           handleCloseForm();
-  //           Alert.fire({
-  //             title: titleExito,
-  //             text: msjExito,
-  //             icon: "success",
-  //             confirmButtonText: "Aceptar",
-  //           });
-  //         }
-  //         return response;
-  //       })
-  //       .catch((error) => {
-  //         Alert.fire({
-  //           title: titleError,
-  //           confirmButtonColor: "#198754",
-  //           text: msjError,
-  //           icon: "error",
-  //           confirmButtonText: "Aceptar",
-  //         });
-  //       });
-  //   },
-  //   backdrop: true,
-  //   allowOutsideClick: !Alert.isLoading,
-  //   });
-  // };
+  const getClients = () => {
+    axios({ url: "/client/", method: "GET" })
+      .then((response) => {
+        setClients(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getProjects = () => {
+    axios({ url: "/project/", method: "GET" })
+      .then((response) => {
+        let data = response.data;
+        let prospectTemp = data.filter(item => item.statusProject.description === "Cancelado" || item.statusProject.description === "Cerrado")
+        setProjects(prospectTemp);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleCloseForm = () => {
-    handleClose();
+    formikModify.resetForm();
     setValues({});
+    handleClose(false);
   };
 
   useEffect(() => {
     setValues({
-      name: name
+      id: id,
+      cotizacion: cotizacion,
+      description: description,
+      months: months,
+      name: name,
+      numberBeca: numberBeca,
+      client: client,
+      project: project,
+      statusProject: statusProject,
+      priceClient: priceClient,
+      status: status
     });
-  }, [name]);
+    formikModify.values.cotizacion = cotizacion;
+    formikModify.values.description = description;
+    formikModify.values.months = months;
+    formikModify.values.name = name;
+    formikModify.values.numberBeca = numberBeca;
+    formikModify.values.client = client?.id;
+    formikModify.values.project = project !== null ? project?.id : "";
+    formikModify.values.statusProject = statusProject;
+    formikModify.values.priceClient = priceClient;
+    //console.log(formikModify.values.project)
+    getProjects();
+    getClients();
+  }, [isOpenUpdateP]);
 
   return (
     <>
-      <Modal show={isOpenUpdate} onHide={handleCloseForm} size="lg">
+      <Modal show={isOpenUpdateP} onHide={handleCloseForm} size="lg">
         <Modal.Header closeButton className="backgroundHeadModal" closeVariant="white">
           <Modal.Title>Modificar proyecto prospecto</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            {/* DATOS DEL PROYECTO */}
+          {/* DATOS DEL PROYECTO */}
+          <Form onSubmit={formikModify.handleSubmit}>
             <Card className="mb-3" bg="white">
               <Card.Header onClick={() => setIsOpenData(!isOpenData)}
                 aria-controls="example-collapse-text"
@@ -113,37 +224,41 @@ export const ProjectEditProspect = ({
               <Collapse in={isOpenData}>
                 <div id="example-collapse-text">
                   <Card.Body>
-                    <Form className="row">
+                    <div className="row">
                       <Form.Group className="col-md-6 mb-4" >
                         <Form.Label>Proyecto anterior</Form.Label>
-                        <Form.Select aria-label="Default select example">
-                          <option value="1">Nuevo</option>
-                          <option value="1">One</option>
-                          <option value="2">Two</option>
-                          <option value="3">Three</option>
+                        <Form.Select name="project" value={formikModify.values.project} onChange={formikModify.handleChange}>
+                          <option value="">No aplica</option>
+                          {
+                            projects.map((proyecto) => <option key={proyecto.id} value={proyecto.id} >{proyecto.acronym}</option>)
+                          }
                         </Form.Select>
-                        <small></small>
+                        {formikModify.errors.project ? (
+                          <span className="text-danger">{formikModify.errors.project}</span>
+                        ) : null}
                       </Form.Group>
                       <Form.Group className="col-md-6 mb-4" >
-                        <Form.Label>Ciclo del proyecto</Form.Label>
-                        <Form.Control type="number" readOnly placeholder="2" />
+                        <Form.Label>Nombre</Form.Label>
+                        <Form.Control name="name" value={formikModify.values.name} onChange={formikModify.handleChange} type="text" />
+                        {formikModify.errors.name ? (
+                          <span className='text-danger'>{formikModify.errors.name}</span>
+                        ) : null}
                       </Form.Group>
                       <Form.Group className="col-md-6 mb-4" >
-                        <Form.Label>Nombre del proyecto</Form.Label>
-                        <Form.Control type="text" value={values.name}/>
-                      </Form.Group>
-                      <Form.Group className="col-md-6 mb-4" >
-                        <Form.Label>Estado</Form.Label>
-                        <Form.Control type="number" readOnly placeholder="Prospecto" />
+                        <Form.Label>Estado del proyecto</Form.Label>
+                        <Form.Control name="statusProject" value={formikModify.values.statusProject?.description} onChange={formikModify.handleChange} type="text" disabled />
+                        {formikModify.errors.statusProject ? (
+                          <span className='text-danger'>{formikModify.errors.statusProject}</span>
+                        ) : null}
                       </Form.Group>
                       <Form.Group className="col-md-12 mb-4" >
                         <Form.Label>Descripción del proyecto</Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          style={{ height: '100px' }}
-                        />
+                        <Form.Control name="description" value={formikModify.values.description} onChange={formikModify.handleChange} as="textarea" />
+                        {formikModify.errors.description ? (
+                          <span className='text-danger'>{formikModify.errors.description}</span>
+                        ) : null}
                       </Form.Group>
-                    </Form>
+                    </div>
                   </Card.Body>
                 </div>
               </Collapse>
@@ -155,7 +270,7 @@ export const ProjectEditProspect = ({
                 aria-expanded={isOpenClient}
                 type="button">
                 <Row>
-                  <Col as="h6" className="text-bold">Cliente del proyecto</Col>
+                  <Col as="h6" className="text-bold">Cliente</Col>
                   <Col className="text-end">
                     <Col>
                       {isOpenClient ? (
@@ -170,38 +285,101 @@ export const ProjectEditProspect = ({
               <Collapse in={isOpenClient}>
                 <div id="example-collapse-text">
                   <Card.Body>
-                    <Form className="row">
-                      <Form.Group className="col-md-6" >
-                        <Form.Label>Proyecto anterior</Form.Label>
-                        <Form.Control type="text" />
+                    <div className="row">
+                      <Form.Group className="col-md-6 mb-4"  >
+                        <Form.Select name="client" value={formikModify.values.client} onChange={formikModify.handleChange}>{
+                            clients.map((cliente) => (
+                              <option key={cliente.id} value={cliente.id}>{cliente.name + " " + cliente.surname + " " + cliente.secondSurname}</option>
+                            ))
+                          }
+                        </Form.Select>
+                        {formikModify.errors.client ? (
+                          <span className='text-danger'>{formikModify.errors.client}</span>
+                        ) : null}
                       </Form.Group>
-                      <Form.Group className="col-md-6" >
-                        <Form.Label>Ciclo</Form.Label>
-                        <Form.Control type="text" />
-                      </Form.Group>
-                    </Form>
+                    </div>
                   </Card.Body>
                 </div>
               </Collapse>
             </Card>
-
-            <Form.Group className="mb-4">
+            {/* COTIZACION */}
+            <Card className="mb-3" bg="white">
+              <Card.Header onClick={() => setIsOpenCotizacion(!isOpenCotizacion)}
+                aria-controls="example-collapse-text"
+                aria-expanded={isOpenCotizacion}
+                type="button">
+                <Row>
+                  <Col as="h6" className="text-bold">Cotización</Col>
+                  <Col className="text-end">
+                    <Col>
+                      {isOpenClient ? (
+                        <FeatherIcon icon="minus" color="grey" />
+                      ) : (
+                        <FeatherIcon icon="plus" color="grey" />
+                      )}
+                    </Col>
+                  </Col>
+                </Row>
+              </Card.Header>
+              <Collapse in={isOpenCotizacion}>
+                <div id="example-collapse-text">
+                  <Card.Body>
+                    <div className="row">
+                      <Form.Group className="col-md-6 mb-4" >
+                        <Form.Label>Presupuesto</Form.Label>
+                        <Form.Control name="cotizacion" value={formikModify.values.cotizacion} onChange={formikModify.handleChange} type="text" />
+                        {formikModify.errors.cotizacion ? (
+                          <span className='text-danger'>{formikModify.errors.cotizacion}</span>
+                        ) : null}
+                      </Form.Group>
+                      <Form.Group className="col-md-6 mb-4" >
+                        <Form.Label>Precio al cliente</Form.Label>
+                        <Form.Control name="priceClient" value={formikModify.values.priceClient} onChange={formikModify.handleChange} type="text" />
+                        {formikModify.errors.priceClient ? (
+                          <span className='text-danger'>{formikModify.errors.priceClient}</span>
+                        ) : null}
+                      </Form.Group>
+                      <Form.Group className="col-md-6 mb-4" >
+                        <Form.Label>Tiempo estimado (meses)</Form.Label>
+                        <Form.Control name="months" value={formikModify.values.months} onChange={formikModify.handleChange} type="text" />
+                        {formikModify.errors.months ? (
+                          <span className='text-danger'>{formikModify.errors.months}</span>
+                        ) : null}
+                      </Form.Group>
+                      <Form.Group className="col-md-6 mb-4" >
+                        <Form.Label>Cantidad de becarios</Form.Label>
+                        <Form.Control name="numberBeca" value={formikModify.values.numberBeca} onChange={formikModify.handleChange} type="text" />
+                        {formikModify.errors.numberBeca ? (
+                          <span className='text-danger'>{formikModify.errors.numberBeca}</span>
+                        ) : null}
+                      </Form.Group>
+                    </div>
+                  </Card.Body>
+                </div>
+              </Collapse>
+            </Card>
+            <Form.Group className="mb-4 mt-3">
               <Row>
                 <Col className="text-end">
-                  <Button variant="secondary" type="button" onClick={handleCloseForm}>
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    onClick={handleCloseForm}
+                  >
                     Cerrar
                   </Button>
                   <Button
                     style={{ background: "#042B61", borderColor: "#042B61" }}
                     className="ms-3"
                     type="submit"
-                    disabled={false}
+                    disabled={!(formikModify.isValid && formikModify.dirty)}
                   >
-                    Guardar
+                    Confirmar
                   </Button>
                 </Col>
               </Row>
             </Form.Group>
+          </Form>
         </Modal.Body>
       </Modal>
     </>

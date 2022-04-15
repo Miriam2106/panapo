@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import FeatherIcon from "feather-icons-react";
-import { useNavigate } from "react-router-dom";
 import {
     Button,
     Card,
@@ -15,32 +14,77 @@ import { FilterComponent } from "../../../shared/components/FilterComponent";
 import { CustomLoader } from "../../../shared/components/CustomLoader";
 import { UserEdit } from "./UserEdit";
 import { UserDetails } from "./UserDetails";
+import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../shared/plugins/alert";
+import * as yup from "yup";
+import axios from "../../../shared/plugins/axios";
+import { useFormik } from "formik";
+import "../../../assets/css/main.css";
 
-export const UserList = () => {
-
-    let value = "";
-
-    const navigation = useNavigate();
-
+export const UserList = ({ handleClose }) => {
     const [filterText, setFilterText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const [users, setUsers] = useState([]);
+    const [person1, setPerson1] = useState([]);
+    const [rol, setRol] = useState([]);
     const [values, setValues] = useState({});
-
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenUpdate, setIsOpenUpdate] = useState(false);
-    const [isOpenDelete, setIsOpenDelete] = useState(false);
     const [isOpenDetails, setIsOpenDetails] = useState(false);
-
-    const setValue = (id) => {
-        value = id;
-    };
 
     useEffect(() => {
         setIsLoading(true);
+        document.title = "PANAPO | Gestión de usuarios";
         getUser();
+        getPerson();
+        getRol();
     }, []);
+
+    const getPerson = () => {
+        axios({ url: "/person/", method: "GET" })
+            .then((response) => {
+                console.log(response);
+                setPerson1(response.data);
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const getRol = () => {
+        axios({ url: "/rol/", method: "GET" })
+            .then((response) => {
+                console.log(response);
+                let data = response.data;
+                let rolesTemp = data.filter(item => item.description !== "Directivo")
+                setRol(rolesTemp);
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const getUser = () => {
+        axios({ url: "/user/", method: "GET" })
+            .then((response) => {
+                let data = response.data;
+                let directivesTemp = data.filter(item => item.person.profession.description !== "Directivo")
+                setUsers(directivesTemp);
+                console.log(directivesTemp)
+                setIsLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    //VIDEO
+    const handleEmail = (event) => {
+        const getEmailId = event.target.value;
+        console.log(getEmailId);
+    }
 
     const columns = [
         {
@@ -50,7 +94,7 @@ export const UserList = () => {
         },
         {
             name: <h6 className="text-center">Nombre del Usuario</h6>,
-            cell: (row) => <div className="txt4">{row.name + " "}{row.surname + " "}{row.lastname}</div>,
+            cell: (row) => <div className="txt4">{row.person.name + " "}</div>,
         },
         {
             name: (
@@ -95,59 +139,83 @@ export const UserList = () => {
             ),
         },
         {
-            name: (
-                <div>
-                    <h6>Desactivar</h6>
-                </div>
-            ),
-            cell: (row) => (
-                <div>
-                    <Button
-                        variant="danger"
-                        size="md"
-                        onClick={() => {
-                            setValues(row);
-                            setIsOpenDelete(true);
-                        }}
-                    >
+            name: <div><h6>Desactivar</h6></div>,
+            cell: (row) => <div>
+                {row.status.description === "Activo" ? (
+                    <Button variant="danger" size="md"
+                        onClick={() => statusChange(row)}>
                         <FeatherIcon icon="slash" />
                     </Button>
-                </div>
-            ),
-        },
+                ) : (
+                    <Button variant="success" size="md"
+                        onClick={() => statusChange(row)}>
+                        <FeatherIcon icon="check-circle" />
+                    </Button>
+                )}
+            </div>
+
+        }
     ];
 
-    let user = [
-        {
-            "name": "Emmanuel",
-            "surname": "Herrera",
-            "lastname": "Ibarra",
-            "id": 134,
-        },
-        {
-            "name": "Thayli",
-            "surname": "Villegas",
-            "lastname": "García",
-            "id": 135,
-        },
-        {
-            "name": "Roy",
-            "surname": "Salgado",
-            "lastname": "Martínez",
-            "id": 136,
-        },
-        {
-            "name": "Miriam",
-            "surname": "Saucedo",
-            "lastname": "Bustamante",
-            "id": 137,
-        },
-    ];
-
-    const getUser = () => {
-        setUsers(users);
-        setIsLoading(false);
-    };
+    const statusChange = (users) => {
+        Alert.fire({
+            title: titleConfirmacion,
+            text: msjConfirmacion,
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#198754",
+            cancelButtonColor: "#dc3545",
+            showCancelButton: true,
+            reverseButtons: true,
+            showLoaderOnConfirm: true,
+            icon: "warning",
+            backdrop: true,
+            allowOutsideClick: !Alert.isLoading,
+            preConfirm: () => {
+                let personalUpdate = {};
+                if (users.status.description === 'Activo') {
+                    personalUpdate = {
+                        ...users,
+                        status: { id: 2 }
+                    };
+                } else {
+                    personalUpdate = {
+                        ...users,
+                        status: { id: 1 }
+                    };
+                }
+                return axios({
+                    url: "/user/",
+                    method: 'PUT',
+                    data: JSON.stringify(personalUpdate)
+                })
+                    .then((response => {
+                        if (!response.error) {
+                            getUser();
+                            Alert.fire({
+                                title: titleExito,
+                                text: msjExito,
+                                icon: "success",
+                                confirmButtonText: "Aceptar",
+                                confirmButtonColor: "#198754",
+                            });
+                        } else {
+                            Alert.fire({
+                                title: titleError,
+                                text: msjError,
+                                icon: "error",
+                                confirmButtonText: "Aceptar",
+                                confirmButtonColor: "#198754",
+                            });
+                        }
+                        return response;
+                    }))
+                    .catch((error) => {
+                        console.log(error);
+                    })
+            }
+        });
+    }
 
     const paginationOptions = {
         rowsPerPageText: "Filas por página",
@@ -169,14 +237,102 @@ export const UserList = () => {
         );
     }, [filterText]);
 
+    const formik = useFormik({
+        initialValues: {
+            email: "",
+            authorities: "",
+        },
+        validationSchema: yup.object().shape({
+            email: yup
+                .string()
+                .required("Campo obligatorio"),
+            authorities: yup
+                .string()
+                .required("Campo obligatorio"),
+
+        }),
+        onSubmit: (values) => {
+            const person2 = {
+                password: values.email,
+                // person: {
+                //     name: values.name,
+                //     surname: values.surname,
+                //     secondSurname: values.secondSurname,
+                //     email: values.email,
+                //     profession: values.profession,
+                //     status: {
+                //         id: 1,
+                //         description: "Activo"
+                //     }
+                // },
+                authorities: values.authorities,
+                status: {
+                    id: 1,
+                    description: "Activo"
+                }
+
+            };
+            console.log(person2)
+            Alert.fire({
+                title: titleConfirmacion,
+                text: msjConfirmacion,
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#198754",
+                cancelButtonColor: "#dc3545",
+                showCancelButton: true,
+                reverseButtons: true,
+                showLoaderOnConfirm: true,
+                icon: "warning",
+                preConfirm: () => {
+                    return axios({ url: "/user/", method: "POST", data: JSON.stringify(person2) })
+                        .then((response) => {
+                            console.log(response)
+                            if (!response.error) {
+                                getUser();
+                                Alert.fire({
+                                    title: titleExito,
+                                    text: msjExito,
+                                    confirmButtonColor: "#198754",
+                                    icon: "success",
+                                    confirmButtonText: "Aceptar",
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        handleCloseForm();
+                                    }
+                                });
+                            }
+                            return response;
+                        }).catch((error) => {
+                            console.log(error)
+                            Alert.fire({
+                                title: titleError,
+                                text: msjError,
+                                cancelButtonColor: "#198754",
+                                icon: "error",
+                                confirmButtonText: "Aceptar"
+                            });
+                        });
+                },
+                backdrop: true,
+                allowOutsideClick: !Alert.isLoading
+            });
+        },
+    });
+
+    const handleCloseForm = () => {
+        formik.resetForm();
+        setIsOpen(false);
+    };
+
     return (
         <div className="content-wrapper screenHeight">
             <Container fluid>
-                <section className="content-header">
-                    <div className="container-fluid">
-                        <div className="row mb-2">
-                            <div className="col-sm-6">
-                                <h1 className="font-weight-bold">Gestión de usuarios</h1>
+                <section class="content-header">
+                    <div class="container-fluid">
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <h1 class="font-weight-bold">Gestión de usuarios</h1>
                             </div>
                         </div>
                     </div>
@@ -208,38 +364,46 @@ export const UserList = () => {
                                 <Container fluid>
                                     <Card.Body>
                                         <div id="example-collapse-text">
-                                            <Form className="row">
+                                            <Form className="row" onSubmit={formik.handleSubmit}>
                                                 <Form.Group className="col-md-6 mb-4" >
                                                     <Form.Label>Rol</Form.Label>
-                                                    <Form.Select aria-label="Default select example">
-                                                        <option value="1">Directivo</option>
-                                                        <option value="1">Coordinador</option>
-                                                        <option value="2">Responsable de proyecto</option>
-                                                        <option value="3">Responsable de desarrollo</option>
+                                                    <Form.Select onChange={formik.handleChange} name="authorities" value={formik.values.authorities}>
+                                                        <option value="">Seleccione una opción</option>
+                                                        {
+                                                            rol.map((rols) => (
+                                                                <option key={rols.id} value={rols.id} >{rols.description}</option>
+                                                            ))
+                                                        }
                                                     </Form.Select>
+                                                    {formik.errors.authorities ? (
+                                                        <span className="text-danger">{formik.errors.authorities}</span>
+                                                    ) : null}
                                                 </Form.Group>
                                                 <Form.Group className="col-md-6 mb-4" >
                                                     <Form.Label>Correo</Form.Label>
-                                                    <Form.Select aria-label="Default select example">
-                                                        <option value="1">miri@gmail.com</option>
-                                                        <option value="1">roy@gmail.com</option>
-                                                        <option value="2">hola@gmail.com</option>
+                                                    
+                                                    <Form.Select name="email" value={formik.values.email} onChange={formik.handleChange}>
+                                                        <option>Seleccione una opción</option>
+                                                        {
+                                                            person1.map((personemail) => (
+                                                                <option key={personemail.id} value={personemail.id} >{personemail.email}</option>
+                                                            ))
+                                                        }
                                                     </Form.Select>
+                                                    {formik.errors.email ? (
+                                                        <span className="text-danger">{formik.errors.email}</span>
+                                                    ) : null}
                                                 </Form.Group>
+                                                <br />
+                                                <div className="d-grid gap-2">
+                                                    <Button type="submit" style={{ background: "#042B61", borderColor: "#042B61", }}
+                                                        disabled={!(formik.isValid && formik.dirty)}>
+                                                        Registrar
+                                                    </Button>
+                                                </div>
                                             </Form>
                                         </div>
-                                        <br />
-                                        <div className="d-grid gap-2">
-                                            <Button
-                                                type="submit"
-                                                style={{
-                                                    background: "#042B61",
-                                                    borderColor: "#042B61",
-                                                }}
-                                            >
-                                                Registrar
-                                            </Button>
-                                        </div>
+
                                     </Card.Body>
                                 </Container>
 
@@ -258,7 +422,7 @@ export const UserList = () => {
                             <Card.Body>
                                 <DataTable
                                     columns={columns}
-                                    data={user}
+                                    data={users}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     progressPending={isLoading}

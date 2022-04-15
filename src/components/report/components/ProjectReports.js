@@ -7,12 +7,18 @@ import FeatherIcon from "feather-icons-react";
 import DataTable from "react-data-table-component";
 import { ReportDetails } from './ReportDetails';
 
-export const ProjectReports = (props) => {
+export const ProjectReports = ({data}) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [reports, setReports] = useState([]);
   const [values, setValues] = useState({});
+  const [id, setId] = useState()
   const [isOpen, setIsOpen] = useState(false);
+
+  console.log(data)
+  useEffect(() => {
+    setId(data)
+  }, [])
 
   let report = [
     {
@@ -31,7 +37,7 @@ export const ProjectReports = (props) => {
     {
       name: <h6>#</h6>,
       cell: (row, index) => <div className="txt4">{index + 1}</div>,
-      width: "4%",
+      width: "6%",
       center: true,
       compact: true
     },

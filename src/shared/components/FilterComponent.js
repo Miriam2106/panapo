@@ -1,6 +1,5 @@
 import React from "react";
-import FeatherIcon from "feather-icons-react";
-import { Col, FormControl, InputGroup, Row } from "react-bootstrap";
+import { Col, FormControl, InputGroup, Form } from "react-bootstrap";
 import "../../../src/assets/css/main.css";
 import "../../../src/assets/css/util.css";
 import "../../../src/assets/css/Styles.css";
@@ -10,7 +9,9 @@ export const FilterComponent = ({ filterText, onFilter, onSearch }) => (
   <>
     <Col md={{ span: 4}}>
       <InputGroup className="mb-3">
+        <Form.Label>Buscar:</Form.Label>
         <FormControl
+        className="ms-3"
           id="search"
           type="text"
           placeholder="Buscar"
@@ -19,9 +20,6 @@ export const FilterComponent = ({ filterText, onFilter, onSearch }) => (
           onChange={onFilter}
           style={{height: "40px"}}
         />
-        <InputGroup.Text type="button" onClick={onSearch} className="backgroundHeadModal">
-          <FeatherIcon icon="search" />
-        </InputGroup.Text>
       </InputGroup>
     </Col>
   </>

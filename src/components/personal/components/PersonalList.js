@@ -130,11 +130,10 @@ export const PersonalList = () => {
     const statusChange = (personal) => {
         Alert.fire({
           title: titleConfirmacion,
-          text: msjConfirmacion,
           confirmButtonText: "Aceptar",
           cancelButtonText: "Cancelar",
-          confirmButtonColor: "#198754",
-          cancelButtonColor: "#dc3545",
+          confirmButtonColor: "#dc3545",
+          cancelButtonColor: "grey",
           showCancelButton: true,
           reverseButtons: true,
           showLoaderOnConfirm: true,
@@ -163,8 +162,7 @@ export const PersonalList = () => {
                 if (!response.error) { 
                   getPersonal();
                   Alert.fire({
-                    title: titleExito,
-                    text: msjExito,
+                    title: "",
                     icon: "success",
                     confirmButtonText: "Aceptar",
                     confirmButtonColor: "#198754",

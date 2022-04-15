@@ -74,10 +74,11 @@ const App = () => {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (token, username) => {
+      signIn: async (token, username, user) => {
         dispatch({ type: 'SIGN_IN', token: token });
         localStorage.setItem('token', token);
-        localStorage.setItem('user', username);
+        localStorage.setItem('username', username);
+        localStorage.setItem('user', user);
       },
       signOut: async () => {
         dispatch({ type: 'SIGN_OUT', token: null });
@@ -88,6 +89,7 @@ const App = () => {
         dispatch({ type: 'ROL_ACTIVE', rol: null });
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('username');
         localStorage.removeItem('rd');
         localStorage.removeItem('rape');
         localStorage.removeItem('directivo');

@@ -19,8 +19,7 @@ export const DirectionEdit = ({
   getDirectives
 }) => {
   const [values, setValues] = useState({ id: id, username: username, status: status, idPerson: idPerson, name: name, surname: surname, secondSurname: secondSurname, statusPerson: statusPerson });
-  const [equalsPassword, setEqualsPassword] = useState(true)
-  //console.log(person)
+
   const handleCloseForm = () => {
     formikModify.resetForm();
     setValues({});
@@ -98,10 +97,9 @@ export const DirectionEdit = ({
         icon: "warning",
         preConfirm: () => {
           //si hay valores en las contraseñas
-          if (valuesFormik.password != "" && valuesFormik.confirmPassword != "") {
+          if (valuesFormik.password !== "" && valuesFormik.confirmPassword !== "") {
             //si manda contraseñas y son iguales
             if (valuesFormik.password === valuesFormik.confirmPassword) {
-              setEqualsPassword(true)
               let data = {
                 ...dataPerson,
                 password: valuesFormik.password,
@@ -151,20 +149,16 @@ export const DirectionEdit = ({
                     confirmButtonText: "Aceptar"
                   });
                 });
-            } else {
-              setEqualsPassword(false)
             }
           } else {
             //no manda contraseña
-            setEqualsPassword(true)
             return axios({ url: "/person/", method: "PUT", data: JSON.stringify(dataPerson.person) })
               .then((response) => {
                 console.log(response)
                 if (!response.error) {
                   getDirectives();
                   Alert.fire({
-                    title: titleExito,
-                    text: msjExito,
+                    title: "Directivo modificado correctamente",
                     confirmButtonColor: "#198754",
                     icon: "success",
                     confirmButtonText: "Aceptar",
@@ -234,6 +228,9 @@ export const DirectionEdit = ({
                 value={formikModify.values.password}
                 onChange={formikModify.handleChange}
               />
+              <Form.Text muted>
+                La contraseña solo se cambiará si ingresa algún valor
+              </Form.Text>
             </Form.Group>
             <Form.Group className="col-md-6 mb-4">
               <Form.Label className="form-label">Confirmar contraseña</Form.Label>
@@ -244,7 +241,7 @@ export const DirectionEdit = ({
                 value={formikModify.values.confirmPassword}
                 onChange={formikModify.handleChange}
               />
-              {formikModify.values.confirmPassword != "" && formikModify.values.password != "" && formikModify.values.confirmPassword != formikModify.values.password ? (
+              {formikModify.values.confirmPassword !== "" && formikModify.values.password !== "" && formikModify.values.confirmPassword !== formikModify.values.password ? (
                 <span className='text-danger'>Las contraseñas no son iguales</span>
               ) : null}
             </Form.Group>
@@ -260,7 +257,7 @@ export const DirectionEdit = ({
                     type="submit"
                     disabled={!(formikModify.isValid && formikModify.dirty)}
                   >
-                    Guardar
+                    Confirmar
                   </Button>
                 </Col>
               </Row>
