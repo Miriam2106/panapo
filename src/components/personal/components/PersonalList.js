@@ -34,6 +34,7 @@ export const PersonalList = () => {
             .then((response) => {
                 //filtrar que no aparezcan los directivos
                 let data = response.data;
+                console.log(data);
                 let personalTemp = data.filter(item => item.profession.description != "Directivo")
                 setPersonal(personalTemp);
                 setIsLoading(false);
@@ -52,7 +53,7 @@ export const PersonalList = () => {
             email: "",
             dateBirth: "",
             phone: "",
-            profession: 1,
+            profession: "",
         },
         validationSchema: yup.object().shape({
             name: yup.string().required("Campo obligatorio"),

@@ -74,11 +74,10 @@ const App = () => {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (token, username, user) => {
+      signIn: async (token, username) => {
         dispatch({ type: 'SIGN_IN', token: token });
         localStorage.setItem('token', token);
         localStorage.setItem('username', username);
-        localStorage.setItem('user', user);
       },
       signOut: async () => {
         dispatch({ type: 'SIGN_OUT', token: null });
@@ -88,7 +87,6 @@ const App = () => {
         dispatch({ type: 'COORDINADOR', enable: null });
         dispatch({ type: 'ROL_ACTIVE', rol: null });
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
         localStorage.removeItem('username');
         localStorage.removeItem('rd');
         localStorage.removeItem('rape');
@@ -127,6 +125,7 @@ const App = () => {
       },
       setRoleActive: (rol) => {
         dispatch({ type: 'ROL_ACTIVE', rol: rol });
+        localStorage.setItem("rolActive", rol)
       }
 
     }),

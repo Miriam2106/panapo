@@ -81,7 +81,7 @@ export const ProjectList = () => {
                 let prospectTemp = data.filter(item => item.statusProject.description === "Prospecto")
                 setProjectsProspect(prospectTemp);
                 setIsLoading(false);
-                console.log(prospectTemp)
+                //console.log(prospectTemp)
             })
             .catch((error) => {
                 console.log(error);
@@ -95,7 +95,6 @@ export const ProjectList = () => {
                 let projectTemp = data.filter(item => item.statusProject.description != "Prospecto")
                 setProjects(projectTemp);
                 setIsLoading(false);
-                console.log(projectTemp)
             })
             .catch((error) => {
                 console.log(error);
@@ -109,7 +108,6 @@ export const ProjectList = () => {
                 let selectTemp = data.filter(item => item.statusProject.description === "Cerrado" || item.statusProject.description === "Cancelado")
                 setSelectProjects(selectTemp);
                 setIsLoading(false);
-                console.log(selectTemp)
             })
             .catch((error) => {
                 console.log(error);
@@ -204,7 +202,6 @@ export const ProjectList = () => {
                 <Button variant="primary" size="md"
                     onClick={() => {
                         setValues(row)
-                        console.log(row)
                         setIsOpenDetails(true)
                     }}>
                     <FeatherIcon icon="info" />
@@ -276,7 +273,6 @@ export const ProjectList = () => {
                     onClick={() => {
                         setValues(row)
                         setIsOpenDetailsP(true)
-                        console.log(row)
                     }}>
                     <FeatherIcon icon="info" />
                 </Button>
@@ -357,7 +353,7 @@ export const ProjectList = () => {
                     },
                 };
             }
-            console.log(project);
+            //console.log(project);
             Alert.fire({
                 title: titleConfirmacion,
                 text: msjConfirmacion,
@@ -372,7 +368,6 @@ export const ProjectList = () => {
                 preConfirm: () => {
                     return axios({ url: "/project/", method: "POST", data: JSON.stringify(project) })
                         .then((response) => {
-                            console.log(response);
                             if (!response.error) {
                                 getProjects();
                                 getClients();
@@ -563,7 +558,7 @@ export const ProjectList = () => {
                                                                         <Form.Select name="client"
                                                                             value={formik.values.client}
                                                                             onChange={formik.handleChange}>
-                                                                            <option value="">Selecciona una opción</option>
+                                                                            <option value="">Seleccione una opción</option>
                                                                             {
                                                                                 clients.map((clientS) => (
                                                                                     <option key={clientS.id} value={clientS.id} >{clientS.name + " " + clientS.surname + " " + clientS.secondSurname}</option>

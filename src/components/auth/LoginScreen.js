@@ -46,7 +46,7 @@ export const LoginScreen = (props) => {
         .then((response) => {
           if (!response.error) {
             console.log(response.data)
-            authContext.signIn(response.data.token, response.data.user.username, response.data.user)
+            authContext.signIn(response.data.token, response.data.user.username)
 
             //asignar los roles
             let authorities = response.data.user.authorities;

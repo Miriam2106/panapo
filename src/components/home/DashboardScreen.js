@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Row, Col, Container, Badge, Card, Table, ProgressBar, Button } from "react-bootstrap";
+import { Row, Col, Container, Badge, Card, ProgressBar, Button } from "react-bootstrap";
 import FeatherIcon from "feather-icons-react";
-import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useNavigate } from 'react-router-dom';
 import { CustomLoader } from "../../shared/components/CustomLoader";
 import DataTable from "react-data-table-component";
 
@@ -199,7 +200,8 @@ export const DashboardScreen = () => {
               handleReport()
           }}
           >
-              <FeatherIcon icon="file" />
+              {/* <FeatherIcon icon="file" /> */}
+              <FontAwesomeIcon icon="edit" />
           </Button>
       </div>,
       center: true,
