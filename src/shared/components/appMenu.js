@@ -28,22 +28,6 @@ export const AppMenu = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to={"/projectRD"} className="nav-link">
-                  <i className="nav-icon far fa-image"></i>
-                  <p>
-                    Gestión de proyectos RD
-                  </p>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to={"/projectrape"} className="nav-link">
-                  <i className="nav-icon far fa-image"></i>
-                  <p>
-                    Gestión de proyectos RAPE
-                  </p>
-                </Link>
-              </li>
-              <li className="nav-item">
                 <Link to={"/personal"} className="nav-link">
                   <i className="nav-icon far fa-calendar-alt"></i>
                   <p>

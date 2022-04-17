@@ -6,32 +6,44 @@ import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExi
 import FeatherIcon from "feather-icons-react";
 import DataTable from "react-data-table-component";
 import { ReportDetails } from './ReportDetails';
+import axios from "../../../shared/plugins/axios";
+import { useNavigate } from 'react-router-dom';
 
-export const ProjectReports = ({data}) => {
+export const ProjectReports = ({
+  data, name
+}) => {
+  const navigation = useNavigate();
 
+  const [values, setValues] = useState({ data: data });
   const [isLoading, setIsLoading] = useState(false);
   const [reports, setReports] = useState([]);
-  const [values, setValues] = useState({});
   const [id, setId] = useState()
+
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log(data)
   useEffect(() => {
-    setId(data)
-  }, [])
+    setIsLoading(true);
+    setValues({
+      data: data,
+    })
+    document.title = "PANAPO | Reportes";
+    setId(data);
+    getReport();
+  }, [id])
 
-  let report = [
-    {
-      "date": "17/04/21",
-      "stagePlanned": "planeación",
-      "stageReal": "planeación",
-      "phasePlanned": "Análisis y diseño",
-      "phaseReal": "Requerimientos",
-      "progress": 50,
-      "inversion": 100,
-      "desviation": 5
-    }
-  ];
+  const getReport = () => {
+    axios({ url: "/report/", method: "GET" })
+      .then((response) => {
+        let data = response.data;
+        console.log(data);
+        let reportTemp = data.filter(item => item.project?.id === id);
+        setReports(reportTemp);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const columns = [
     {
@@ -74,8 +86,8 @@ export const ProjectReports = ({data}) => {
     {
       name: <h6>Porcentaje de avance total</h6>,
       cell: (row) => <Container fluid>
-        <ProgressBar now={row.progress} variant="success" visuallyHidden />
-        <div className='text-center'><small>{row.progress}% completado</small></div>
+        <ProgressBar now={row.percentage} variant="success" visuallyHidden />
+        <div className='text-center'><small>{row.percentage}% completado</small></div>
       </Container>,
       center: true,
       width: "17%",
@@ -97,7 +109,7 @@ export const ProjectReports = ({data}) => {
     },
     {
       name: <h6>Costo total de inversión</h6>,
-      cell: (row) => <div className="txt4 align-center-items">${row.inversion}</div>,
+      cell: (row) => <div className="txt4 align-center-items">${row.cost}</div>,
       right: false,
       compact: true
     },
@@ -106,16 +118,16 @@ export const ProjectReports = ({data}) => {
       cell: (row) =>
         <>
           {
-            row.desviation <= 0 ? (
+            row.daysDeviation <= 0 ? (
               <h6>
                 <Badge bg="success">
-                  <div>{row.desviation}</div>
+                  <div>{row.daysDeviation}</div>
                 </Badge>
               </h6>
             ) : (
               <h6>
                 <Badge bg="danger">
-                  <div>{row.desviation}</div>
+                  <div>{row.daysDeviation}</div>
                 </Badge>
               </h6>
             )
@@ -125,16 +137,10 @@ export const ProjectReports = ({data}) => {
     }
   ];
 
-  const getReports = () => {
-    setReports(report);
-    setIsLoading(false);
-  };
-
   const paginationOptions = {
     rowsPerPageText: "Filas por página",
     rangeSeparatorText: "de",
   };
-
 
   return (
     <div className="content-wrapper screenHeight">
@@ -143,7 +149,13 @@ export const ProjectReports = ({data}) => {
           <div class="container-fluid">
             <div class="row mb-2">
               <div class="col-sm-6">
-                <h1 class="font-weight-bold">Nombre del proyecto</h1>
+                <h1 class="font-weight-bold">Reportes de {name}</h1>
+              </div>
+              <div class="col-sm-6 text-end">
+                <Button className="btn" style={{ background: "#042B61", borderColor: "#042B61" }}
+                onClick={()=>navigation("/", { replace: true })}>
+                  Volver al Panel de proyectos
+                </Button>
               </div>
             </div>
           </div>
@@ -160,9 +172,10 @@ export const ProjectReports = ({data}) => {
               <Card.Body>
                 <DataTable
                   columns={columns}
-                  data={report}
+                  data={reports}
                   pagination
                   paginationComponentOptions={paginationOptions}
+                  noDataComponent="No hay registros"
                   progressPending={isLoading}
                   progressComponent={<CustomLoader />}
                 />

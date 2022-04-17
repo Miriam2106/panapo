@@ -7,6 +7,6 @@ export const ReportScreen = () => {
   console.log(state);
 
   return (
-    <ProjectReports data={state.id}/>
+    <ProjectReports data={state.id} name={state.name}/>
   )
 }

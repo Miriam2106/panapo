@@ -3,101 +3,149 @@ import { Button, Col, Form, Modal, Row } from "react-bootstrap";
 import FeatherIcon from "feather-icons-react";
 import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../../shared/plugins/alert";
 import axios from "../../../../shared/plugins/axios";
+import * as yup from "yup";
+import { useFormik } from "formik";
 
-export const ProjectEdit = ({ 
-  isOpenUpdate, 
-  handleClose, 
-  setProjects, 
+export const ProjectEdit = ({
+  isOpenUpdate,
+  handleClose,
+  getProjects,
   name,
+  id,
+  statusProject,
+  priority,
   status
 }) => {
 
-    const [values, setValues] = useState({name: name, status: status});
+  const [values, setValues] = useState({ id: id, name: name, statusProject: statusProject, priority: priority, status: status });
 
-    // const handleChange = (event) =>{
-    //   const { name, value } = event.target;
-    //   setValues({ ...values, [name]: value});
-    // }  
+  const formikModify = useFormik({
+    initialValues: {
+      statusProject: "",
+      priority: "",
+    },
+    validationSchema: yup.object().shape({
+      priority: yup.string().required("Campo obligatorio"),
+      statusProject: yup.string().required("Campo obligatorio"),
+    }),
+    onSubmit: (valuesFormik) => {
+      const project1 = {
+        ...valuesFormik,
+         statusProject:{
+           id: parseInt(valuesFormik.statusProject),
+         }
+      };
+      console.log(project1);
+      Alert.fire({
+        title: titleConfirmacion,
+        text: msjConfirmacion,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        showCancelButton: true,
+        reverseButtons: true,
+        showLoaderOnConfirm: true,
+        icon: "warning",
+        preConfirm: () => {
+          console.log("entró ");
+          return axios({
+            url: "/project/update",
+            method: "PUT",
+            data: JSON.stringify(project1),
 
-    // const handleSubmit = (event) =>{
-    //   event.preventDefault();
-    //   console.log(values);
-    //   Alert.fire({
-    //   title: titleConfirmacion,
-    //   text: msjConfirmacion,
-    //   confirmButtonText: "Aceptar",
-    //   cancelButtonText: "Cancelar",
-    //   showCancelButton: true,
-    //   reverseButtons: true,
-    //   showLoaderOnConfirm: true,
-    //   icon: "warning",
-    //   preConfirm: () => {
-    //     return axios({
-    //       url: "/category/",
-    //       method: "PUT",
-    //       data: JSON.stringify(values),
-    //     })
-    //       .then((response) => {
-    //         console.log(response);
-    //         if (!response.error) {
-    //           setCategories((categories) => [
-    //             ...categories.filter((it) => it.id !== values.id),
-    //             values,
-    //           ]);
-    //           handleCloseForm();
-    //           Alert.fire({
-    //             title: titleExito,
-    //             text: msjExito,
-    //             icon: "success",
-    //             confirmButtonText: "Aceptar",
-    //           });
-    //         }
-    //         return response;
-    //       })
-    //       .catch((error) => {
-    //         Alert.fire({
-    //           title: titleError,
-    //           confirmButtonColor: "#198754",
-    //           text: msjError,
-    //           icon: "error",
-    //           confirmButtonText: "Aceptar",
-    //         });
-    //       });
-    //   },
-    //   backdrop: true,
-    //   allowOutsideClick: !Alert.isLoading,
-    //   });
-    // };
-
-    const handleCloseForm = () =>{
-      handleClose();
-      setValues({});
-    };
-
-    useEffect(() => {
-      setValues({
-        name: name
+          })
+            .then((response) => {
+              console.log(response);
+              console.log("Si hizo el cambio");
+              console.log(project1);
+              if (!response.error) {
+                getProjects();
+                Alert.fire({
+                  title: titleExito,
+                  text: msjExito,
+                  icon: "success",
+                  confirmButtonText: "Aceptar",
+                }).then((result)=>{
+                  if(result.isConfirmed){
+                    handleCloseForm();
+                  }
+                });
+              }
+              return response;
+            })
+            .catch((error) => {
+              console.log(error);
+              Alert.fire({
+                title: titleError,
+                confirmButtonColor: "#198754",
+                text: msjError,
+                icon: "error",
+                confirmButtonText: "Aceptar",
+              }).then((result)=>{
+                if (result.isConfirmed) {
+                  handleCloseForm();
+                }
+              });
+              console.log("No hizo el cambio");
+            });
+        },
+        backdrop: true,
+        allowOutsideClick: !Alert.isLoading,
       });
-    }, [name]);
-  
-    return (
-      <>
+    },
+  });
+
+
+  const handleCloseForm = () => {
+    formikModify.resetForm();
+    setValues({});
+    handleClose(false);
+  };
+
+  useEffect(() => {
+    setValues({
+      id: id,
+      statusProject: statusProject,
+      priority: priority,
+      status: status
+    });
+    formikModify.values.id = id
+    formikModify.values.statusProject = statusProject?.id;
+    formikModify.values.priority = priority;
+  }, [isOpenUpdate]);
+
+  return (
+    <>
       <Modal show={isOpenUpdate} onHide={handleCloseForm}>
         <Modal.Header closeButton className="backgroundHeadModal" closeVariant="white">
           <Modal.Title>Modificar proyecto</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group className="mb-4">
-              <Form.Label className="form-label">Nombre</Form.Label>
-              <Form.Control
-                name="name"
-                placeholder="Nombre del proyecto"
-                value={values.name}
-              />
-              {/* {formik.errors.description ? (
-                <span className="error-text">{formik.errors.description}</span>
-              ) : null} */}
+          <Form onSubmit={formikModify.handleSubmit}>
+            <Form.Group className="col-md-12 mb-4">
+              <Form.Label className="font-weight-normal">Estado del proyecto<span className="text-danger">*</span></Form.Label>
+              <Form.Select name="statusProject" value={formikModify.values.statusProject} onChange={formikModify.handleChange}>
+                <option value="2">Activo</option>
+                <option value="5">Cancelado</option>
+                <option value="4">Cerrado</option>
+                <option value="3">Pausado</option>
+              </Form.Select>
+              {formikModify.errors.statusProject ? (
+                <span className='text-danger'>{formikModify.errors.statusProject}</span>
+              ) : null}
+            </Form.Group>
+            <Form.Group className="col-md-12 mb-4" >
+              <Form.Label className="font-weight-normal">Prioridad<span className="text-danger">*</span></Form.Label>
+              <Form.Select aria-label="Seleccionar tipo de cliente" name="priority"
+                value={formikModify.values.priority}
+                onChange={formikModify.handleChange} >
+                <option value="">Seleccione una opción</option>
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+              </Form.Select>
+              {formikModify.errors.priority ? (
+                <span className='text-danger'>{formikModify.errors.priority}</span>
+              ) : null}
             </Form.Group>
             <Form.Group className="mb-4">
               <Row>
@@ -109,9 +157,9 @@ export const ProjectEdit = ({
                     style={{ background: "#042B61", borderColor: "#042B61" }}
                     className="ms-3"
                     type="submit"
-                    disabled={false}
+                    disabled={!(formikModify.isValid && formikModify.dirty)}
                   >
-                    Guardar
+                    Confirmar
                   </Button>
                 </Col>
               </Row>
@@ -119,6 +167,6 @@ export const ProjectEdit = ({
           </Form>
         </Modal.Body>
       </Modal>
-      </>
-    );
-  };
+    </>
+  );
+};

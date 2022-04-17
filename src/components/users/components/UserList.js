@@ -36,15 +36,16 @@ export const UserList = ({ handleClose }) => {
         setIsLoading(true);
         document.title = "PANAPO | Gestión de usuarios";
         getUser();
-        getPerson();
         getRol();
+        getPerson();
     }, []);
 
     const getPerson = () => {
         axios({ url: "/person/", method: "GET" })
             .then((response) => {
-                console.log(response);
+                console.log(response.data);
                 setPerson1(response.data);
+
                 setIsLoading(false);
             })
             .catch((error) => {
@@ -55,9 +56,8 @@ export const UserList = ({ handleClose }) => {
     const getRol = () => {
         axios({ url: "/rol/", method: "GET" })
             .then((response) => {
-                console.log(response);
                 let data = response.data;
-                let rolesTemp = data.filter(item => item.description !== "Directivo")
+                let rolesTemp = data.filter(item => item.description !== "Directivo" && item.description !== "Coordinador")
                 setRol(rolesTemp);
                 setIsLoading(false);
             })
@@ -70,9 +70,9 @@ export const UserList = ({ handleClose }) => {
         axios({ url: "/user/", method: "GET" })
             .then((response) => {
                 let data = response.data;
-                let directivesTemp = data.filter(item => item.person.profession.description !== "Directivo")
-                setUsers(directivesTemp);
-                console.log(directivesTemp)
+                let userTemp = data.filter(item => item.person.profession.description !== "Directivo")
+                console.log(userTemp);
+                setUsers(userTemp);
                 setIsLoading(false);
             })
             .catch((error) => {
@@ -90,11 +90,12 @@ export const UserList = ({ handleClose }) => {
         {
             name: <h6 >#</h6>,
             cell: (row, index) => <div><h6>{index + 1}</h6></div>,
-            width: "4%"
+            width: "6%"
         },
         {
-            name: <h6 className="text-center">Nombre del Usuario</h6>,
-            cell: (row) => <div className="txt4">{row.person.name + " "}</div>,
+            name: <h6 className="text-center">Nombre del usuario</h6>,
+            cell: (row) => <div className="txt4">{row.person.name + " "+row.person.surname + " "+row.person.secondSurname + " "}</div>,
+            width: "35%"
         },
         {
             name: (
@@ -237,6 +238,12 @@ export const UserList = ({ handleClose }) => {
         );
     }, [filterText]);
 
+    const filteredItems = users.filter(
+        (item) => item.person.name && item.person.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        item.person.surname && item.person.surname.toLowerCase().includes(filterText.toLowerCase()) || 
+        item.person.secondSurname && item.person.secondSurname.toLowerCase().includes(filterText.toLowerCase())
+    );
+
     const formik = useFormik({
         initialValues: {
             email: "",
@@ -366,7 +373,7 @@ export const UserList = ({ handleClose }) => {
                                         <div id="example-collapse-text">
                                             <Form className="row" onSubmit={formik.handleSubmit}>
                                                 <Form.Group className="col-md-6 mb-4" >
-                                                    <Form.Label>Rol</Form.Label>
+                                                    <Form.Label className="font-weight-normal">Rol<span className="text-danger">*</span></Form.Label>
                                                     <Form.Select onChange={formik.handleChange} name="authorities" value={formik.values.authorities}>
                                                         <option value="">Seleccione una opción</option>
                                                         {
@@ -380,7 +387,7 @@ export const UserList = ({ handleClose }) => {
                                                     ) : null}
                                                 </Form.Group>
                                                 <Form.Group className="col-md-6 mb-4" >
-                                                    <Form.Label>Correo</Form.Label>
+                                                    <Form.Label className="font-weight-normal">Correo<span className="text-danger">*</span></Form.Label>
                                                     
                                                     <Form.Select name="email" value={formik.values.email} onChange={formik.handleChange}>
                                                         <option>Seleccione una opción</option>
@@ -422,7 +429,7 @@ export const UserList = ({ handleClose }) => {
                             <Card.Body>
                                 <DataTable
                                     columns={columns}
-                                    data={users}
+                                    data={filteredItems}
                                     pagination
                                     paginationComponentOptions={paginationOptions}
                                     progressPending={isLoading}

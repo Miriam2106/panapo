@@ -57,7 +57,6 @@ const App = () => {
             ...prevState,
             rolSign: action.rol
           };
-
       }
     },
     {
@@ -127,10 +126,10 @@ const App = () => {
         dispatch({ type: 'ROL_ACTIVE', rol: rol });
         localStorage.setItem("rolActive", rol)
       }
-
     }),
     []
   );
+
   useEffect(() => {
     let coordinador = localStorage.getItem("coordinador");
     let rd = localStorage.getItem("rd");
@@ -152,7 +151,6 @@ const App = () => {
     if(directivo==="true"){
       dispatch({ type: 'DIRECTIVO', enable: true });
     }
-    
     dispatch({ type: 'ROL_ACTIVE', rol:rolActivo });
     dispatch({ type: 'RESTORE_TOKEN', token: token });
   }, []);

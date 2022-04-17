@@ -50,21 +50,23 @@ export const LoginScreen = (props) => {
 
             //asignar los roles
             let authorities = response.data.user.authorities;
+            console.log(authorities)
             let directivo, coordinador, rape, rd;
             for (let i = 0; i < authorities.length; i++) {
               if (authorities[i].authority === "Coordinador") {
                 coordinador = true;
               }
-              if (authorities[i].authority === "RAPE") {
+              if (authorities[i].authority === "Responsable de Proyecto") {
                 rape = true;
               }
-              if (authorities[i].authority === "RD") {
+              if (authorities[i].authority === "Responsable de Desarrollo") {
                 rd = true;
               }
               if (authorities[i].authority === "Directivo") {
                 directivo = true;
               }
             }
+            console.log(rd)
             authContext.setRoles(directivo, coordinador, rape, rd);
             navigation("/", { replace: true });
           }
@@ -80,10 +82,6 @@ export const LoginScreen = (props) => {
         });
     },
   });
-
-  const handleCancel = () => {
-    navigation("/");
-  };
 
   useEffect(() => {
     document.title = "PANAPO | Login";

@@ -10,24 +10,32 @@ import { ProjectStart } from "./ProjectStart";
 import { CustomLoader } from "../../../../shared/components/CustomLoader";
 import { FilterComponent } from "../../../../shared/components/FilterComponent";
 import Alert, { msjConfirmacion, titleConfirmacion, titleError, msjError, msjExito, titleExito } from "../../../../shared/plugins/alert";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import "../../../../assets/css/main.css";
 import "../../../../assets/css/util.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as yup from "yup";
 import axios from "../../../../shared/plugins/axios";
 import { useFormik } from "formik";
+//iconos de fontawesome
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faEdit, faFile, faInfo } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faEdit, faFile, faInfo);
 
 export const ProjectList = () => {
     let value = "";
+    let nameProject = "";
     const navigation = useNavigate();
 
     const handleReport = () => {
-        navigation('/report', { state: { id: value } });
+        navigation('/report', { state: { id: value, name: nameProject } });
     }
 
-    const setValue = (id) => {
+    const setValue = (id, acronym) => {
         value = id;
+        nameProject = acronym;
     }
 
     const [filterText, setFilterText] = useState("");
@@ -115,7 +123,7 @@ export const ProjectList = () => {
     };
 
     const filteredItems = projects.filter(
-        (item) => item.name && item.name.toLowerCase().includes(filterText.toLowerCase())
+        (item) => item.acronym && item.acronym.toLowerCase().includes(filterText.toLowerCase())
     );
 
     const columns = [
@@ -133,8 +141,8 @@ export const ProjectList = () => {
         {
             name: <h6>Avance real del proyecto</h6>,
             cell: (row) => <div className="txt4">
-                <ProgressBar now={row.progress} variant="success" />
-                <small>{row.progress}% completado</small>
+                <ProgressBar now={row.percentage} variant="success" />
+                <small>{row.percentage}% completado</small>
             </div>,
             width:"25%"
         },
@@ -202,9 +210,10 @@ export const ProjectList = () => {
                 <Button variant="primary" size="md"
                     onClick={() => {
                         setValues(row)
+                        console.log(row)
                         setIsOpenDetails(true)
                     }}>
-                    <FeatherIcon icon="info" />
+                    <FontAwesomeIcon icon={faInfo} size="xl"/>
                 </Button>
             </div>
         },
@@ -216,19 +225,20 @@ export const ProjectList = () => {
                         setValues(row)
                         setIsOpenUpdate(true)
                     }}>
-                    <FeatherIcon icon="edit" />
+                    <FontAwesomeIcon icon={faEdit} size="lg" />
                 </Button>
-            </div>
+            </div>,
+            width: "15%"
         },
         {
             name: <div><h6>Reportes</h6></div>,
             cell: (row) => <div>
                 <Button variant="success" size="md" onClick={() => {
-                    setValue(row.id)
+                    setValue(row.id, row.acronym)
                     handleReport()
                 }}
                 >
-                    <FeatherIcon icon="file" />
+                    <FontAwesomeIcon icon={faFile} size="lg"/>
                 </Button>
             </div>
         },
@@ -733,7 +743,7 @@ export const ProjectList = () => {
                                 <ProjectEdit
                                     isOpenUpdate={isOpenUpdate}
                                     handleClose={setIsOpenUpdate}
-                                    setProjects={setProjects}
+                                    getProjects={getProjects}
                                     {...values}
                                 />
                                 <ProjectDetails
